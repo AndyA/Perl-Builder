@@ -1,0 +1,347 @@
+diff -uNr perl-5.10.0/Configure perl-5.10.0-dtrace/Configure
+--- perl-5.10.0/Configure	2007-12-18 10:47:07.000000000 +0000
++++ perl-5.10.0-dtrace/Configure	2008-01-10 23:36:13.000000000 +0000
+@@ -238,6 +238,7 @@
+ cpp=''
+ csh=''
+ date=''
++dtrace=''
+ echo=''
+ egrep=''
+ emacs=''
+@@ -1192,6 +1193,7 @@
+ useithreads=''
+ usereentrant=''
+ usethreads=''
++usedtrace=''
+ incpath=''
+ mips_type=''
+ usrinc=''
+@@ -8927,6 +8929,71 @@
+ set usefaststdio
+ eval $setvar
+ 
++: DTrace support
++dflt_dtrace='/usr/sbin/dtrace'
++cat <<EOM
++
++Perl can be built to support DTrace on platforms that support it.
++DTrace is a diagnosis and performance analysis tool from Sun.
++
++If this doesn't make any sense to you, just accept the default '$dflt'.
++EOM
++
++while test 1 ; do
++	case "$usedtrace" in
++	$define|true|[yY]*) 
++		dflt='y' 
++		;;
++	?*)
++		dflt='y' 
++		dflt_dtrace=$usedtrace
++		;;
++	*) 
++		dflt='n' 
++		;;
++	esac
++
++	rp='Support DTrace if available?'
++	. ./myread
++	case "$ans" in
++	y|Y)	val="$define" ;;
++	*)      val="$undef" ;;
++	esac
++	set usedtrace
++	eval $setvar
++
++	test "X$usedtrace" != "X$define" && break
++
++	echo " "
++	rp='Where is the dtrace executable?'
++	dflt=$dflt_dtrace
++	. ./getfile
++	val="$ans"
++	set dtrace
++	eval $setvar
++	
++	if test -f $dtrace
++	then
++		if ! $dtrace -h -s ../perldtrace.d \
++			-o perldtrace.tmp >/dev/null 2>&1 \
++			&& rm -f perldtrace.tmp
++		then
++			cat >&2 <<EOM
++
++*** $me:  Fatal Error:  $dtrace doesn't support -h flag
++***
++*** Your installed dtrace doesn't support the -h switch to compile a D
++*** program into a C header. Can't continue.
++
++EOM
++			exit 1
++		fi
++		break;
++	fi
++
++	echo "$dtrace was not found."
++	echo " "
++done
+ 
+ : define an is-a-typedef? function
+ typedef='type=$1; var=$2; def=$3; shift; shift; shift; inclist=$@;
+@@ -22014,6 +22081,7 @@
+ doublesize='$doublesize'
+ drand01='$drand01'
+ drand48_r_proto='$drand48_r_proto'
++dtrace='$dtrace'
+ dynamic_ext='$dynamic_ext'
+ eagain='$eagain'
+ ebcdic='$ebcdic'
+@@ -22473,6 +22541,7 @@
+ use64bitint='$use64bitint'
+ usecrosscompile='$usecrosscompile'
+ usedl='$usedl'
++usedtrace='$usedtrace'
+ usefaststdio='$usefaststdio'
+ useithreads='$useithreads'
+ uselargefiles='$uselargefiles'
+diff -uNr perl-5.10.0/MANIFEST perl-5.10.0-dtrace/MANIFEST
+--- perl-5.10.0/MANIFEST	2007-12-18 10:47:07.000000000 +0000
++++ perl-5.10.0-dtrace/MANIFEST	2008-01-10 23:36:14.000000000 +0000
+@@ -2922,6 +2922,7 @@
+ mpeix/relink			MPE/iX port
+ mro.c				Method Resolution Order code
+ myconfig.SH			Prints summary of the current configuration
++mydtrace.h                      Support for optional DTrace probes
+ NetWare/bat/Buildtype.bat	NetWare port
+ NetWare/bat/SetCodeWar.bat	NetWare port
+ NetWare/bat/Setnlmsdk.bat	NetWare port
+@@ -3052,6 +3053,7 @@
+ patchlevel.h			The current patch level of perl
+ perlapi.c			Perl API functions
+ perlapi.h			Perl API function declarations
++perldtrace.d        D script for Perl probes
+ perl.c				main()
+ perl.h				Global declarations
+ perlio.c			C code for PerlIO abstraction
+diff -uNr perl-5.10.0/Makefile.SH perl-5.10.0-dtrace/Makefile.SH
+--- perl-5.10.0/Makefile.SH	2007-12-18 10:47:07.000000000 +0000
++++ perl-5.10.0-dtrace/Makefile.SH	2008-01-10 23:36:14.000000000 +0000
+@@ -183,6 +183,16 @@
+     nonxs_list="$nonxs_list ext/$f/pm_to_blib"
+ done
+ 
++dtrace_h=''
++dtrace_o=''
++case "$usedtrace" in
++define|true)
++	dtrace_h='perldtrace.h' 
++	$dtrace -G -s perldtrace.d -o perldtrace.tmp >/dev/null 2>&1 \
++		&& rm -f perldtrace.tmp && dtrace_o='perldtrace$(OBJ_EXT)'
++	;;
++esac
++
+ echo "Extracting Makefile (with variable substitutions)"
+ $spitshell >Makefile <<!GROK!THIS!
+ # Makefile.SH
+@@ -274,6 +284,10 @@
+ # then you'll need to change this, or override it on the make command line.
+ VALGRIND=valgrind
+ 
++DTRACE = $dtrace
++DTRACE_H = $dtrace_h
++DTRACE_O = $dtrace_o
++
+ FIRSTMAKEFILE = $firstmakefile
+ 
+ # Any special object files needed by this architecture, e.g. os2/os2.obj
+@@ -357,7 +371,7 @@
+ h2 = embed.h form.h gv.h handy.h hv.h keywords.h mg.h op.h opcode.h
+ h3 = pad.h patchlevel.h perl.h perlapi.h perly.h pp.h proto.h regcomp.h
+ h4 = regexp.h scope.h sv.h unixish.h util.h iperlsys.h thread.h
+-h5 = utf8.h warnings.h
++h5 = utf8.h warnings.h mydtrace.h
+ h = $(h1) $(h2) $(h3) $(h4) $(h5)
+ 
+ c1 = av.c scope.c op.c doop.c doio.c dump.c gv.c hv.c mg.c reentr.c mro.c perl.c
+@@ -372,7 +386,8 @@
+ obj2 = hv$(OBJ_EXT) av$(OBJ_EXT) perl$(OBJ_EXT) run$(OBJ_EXT) pp_hot$(OBJ_EXT) sv$(OBJ_EXT) pp$(OBJ_EXT) scope$(OBJ_EXT) pp_ctl$(OBJ_EXT) pp_sys$(OBJ_EXT)
+ obj3 = doop$(OBJ_EXT) doio$(OBJ_EXT) regexec$(OBJ_EXT) utf8$(OBJ_EXT) taint$(OBJ_EXT) deb$(OBJ_EXT) universal$(OBJ_EXT) xsutils$(OBJ_EXT) globals$(OBJ_EXT) perlio$(OBJ_EXT) perlapi$(OBJ_EXT) numeric$(OBJ_EXT) mathoms$(OBJ_EXT) locale$(OBJ_EXT) pp_pack$(OBJ_EXT) pp_sort$(OBJ_EXT)
+ 
+-obj = $(obj1) $(obj2) $(obj3) $(ARCHOBJS)
++ndt_obj = $(obj1) $(obj2) $(obj3) $(ARCHOBJS)
++obj = $(ndt_obj) $(DTRACE_O)
+ 
+ lintflags = \
+     -b \
+@@ -586,6 +601,26 @@
+ Makefile: $Makefile_s
+ !GROK!THIS!
+ else
++	case "$dtrace_h" in
++	?*)
++		$spitshell >>Makefile <<'!NO!SUBS!'
++$(DTRACE_H): perldtrace.d
++	$(DTRACE) -h -s perldtrace.d -o $(DTRACE_H)
++
++mydtrace.h: $(DTRACE_H)
++
++!NO!SUBS!
++		;;
++	esac
++	case "$dtrace_o" in
++	?*)
++		$spitshell >>Makefile <<'!NO!SUBS!'
++$(DTRACE_O): perldtrace.d
++	$(DTRACE) -G -s perldtrace.d -o $(DTRACE_O) $(ndt_obj)
++
++!NO!SUBS!
++		;;
++    esac
+ 	$spitshell >>Makefile <<'!NO!SUBS!'
+ $(LIBPERL): $& $(obj) $(DYNALOADER) $(LIBPERLEXPORT)
+ !NO!SUBS!
+@@ -1082,7 +1117,7 @@
+ 	-rm -f cygwin.c libperl*.def libperl*.dll cygperl*.dll *.exe.stackdump
+ 	-rm -f perl$(EXE_EXT) suidperl$(EXE_EXT) miniperl$(EXE_EXT) $(LIBPERL) libperl.* microperl
+ 	-rm -f opcode.h-old opnames.h-old pp.sym-old pp_proto.h-old
+-	-rm -f config.over
++	-rm -f config.over $(DTRACE_H)
+ 
+ # Do not 'make _tidy' directly.
+ _tidy:
+diff -uNr perl-5.10.0/config_h.SH perl-5.10.0-dtrace/config_h.SH
+--- perl-5.10.0/config_h.SH	2007-12-18 10:47:07.000000000 +0000
++++ perl-5.10.0-dtrace/config_h.SH	2008-01-10 23:36:14.000000000 +0000
+@@ -2800,6 +2800,12 @@
+ #$d_oldpthreads	OLD_PTHREADS_API		/**/
+ #$usereentrant	USE_REENTRANT_API	/**/
+ 
++/* USE_DTRACE
++ *	This symbol, if defined, indicates that Perl should
++ *	be built with support for DTrace.
++ */
++#$usedtrace USE_DTRACE			/**/
++
+ /* PERL_VENDORARCH:
+  *	If defined, this symbol contains the name of a private library.
+  *	The library is private in the sense that it needn't be in anyone's
+diff -uNr perl-5.10.0/cop.h perl-5.10.0-dtrace/cop.h
+--- perl-5.10.0/cop.h	2007-12-18 10:47:07.000000000 +0000
++++ perl-5.10.0-dtrace/cop.h	2008-01-10 23:36:14.000000000 +0000
+@@ -132,6 +132,7 @@
+ #define CATCH_SET(v)		(PL_top_env->je_mustcatch = (v))
+ 
+ 
++#include "mydtrace.h"
+ 
+ struct cop {
+     BASEOP
+@@ -295,6 +296,10 @@
+  * decremented by LEAVESUB, the other by LEAVE. */
+ 
+ #define PUSHSUB_BASE(cx)						\
++	ENTRY_PROBE(GvENAME(CvGV(cv)),		       			\
++		CopFILE((COP*)CvSTART(cv)),				\
++		CopLINE((COP*)CvSTART(cv)));				\
++									\
+ 	cx->blk_sub.cv = cv;						\
+ 	cx->blk_sub.olddepth = CvDEPTH(cv);				\
+ 	cx->blk_sub.hasargs = hasargs;					\
+@@ -340,8 +345,13 @@
+ 	AvFILLp(ary) = -1;						\
+     } STMT_END
+ 
++
+ #define POPSUB(cx,sv)							\
+     STMT_START {							\
++	RETURN_PROBE(GvENAME(CvGV((CV*)cx->blk_sub.cv)),		\
++		CopFILE((COP*)CvSTART((CV*)cx->blk_sub.cv)),		\
++		CopLINE((COP*)CvSTART((CV*)cx->blk_sub.cv)));		\
++									\
+ 	if (cx->blk_sub.hasargs) {					\
+ 	    POP_SAVEARRAY();						\
+ 	    /* abandon @_ if it got reified */				\
+diff -uNr perl-5.10.0/mydtrace.h perl-5.10.0-dtrace/mydtrace.h
+--- perl-5.10.0/mydtrace.h	1970-01-01 01:00:00.000000000 +0100
++++ perl-5.10.0-dtrace/mydtrace.h	2008-01-10 23:36:14.000000000 +0000
+@@ -0,0 +1,43 @@
++/*    mydtrace.h
++ *
++ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
++ *    2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, by Larry Wall and others
++ *
++ *    You may distribute under the terms of either the GNU General Public
++ *    License or the Artistic License, as specified in the README file.
++ *
++ *	Provides macros that wrap the various DTrace probes we use. We add
++ *	an extra level of wrapping to encapsulate the _ENABLED tests.
++ */
++
++#if defined(USE_DTRACE) && defined(PERL_CORE)
++
++#include "perldtrace.h"
++
++#define ENTRY_PROBE(func, file, line) 		\
++    if (PERL_SUB_ENTRY_ENABLED()) {		\
++	PERL_SUB_ENTRY(func, file, line); 	\
++    }
++
++#define RETURN_PROBE(func, file, line) 		\
++    if (PERL_SUB_RETURN_ENABLED()) {		\
++	PERL_SUB_RETURN(func, file, line); 	\
++    }
++
++#else
++
++/* NOPs */
++#define ENTRY_PROBE(func, file, line)
++#define RETURN_PROBE(func, file, line)
++
++#endif
++
++/*
++ * Local variables:
++ * c-indentation-style: bsd
++ * c-basic-offset: 4
++ * indent-tabs-mode: t
++ * End:
++ *
++ * ex: set ts=8 sts=4 sw=4 noet:
++ */
+diff -uNr perl-5.10.0/perldtrace.d perl-5.10.0-dtrace/perldtrace.d
+--- perl-5.10.0/perldtrace.d	1970-01-01 01:00:00.000000000 +0100
++++ perl-5.10.0-dtrace/perldtrace.d	2008-01-10 23:36:14.000000000 +0000
+@@ -0,0 +1,9 @@
++/*
++ * Written by Alan Burlinson -- taken from his blog post
++ * at <http://blogs.sun.com/alanbur/date/20050909>.
++ */
++
++provider perl {
++	probe sub__entry(char *, char *, int);
++    probe sub__return(char *, char *, int);
++};
+diff -uNr perl-5.10.0/util.c perl-5.10.0-dtrace/util.c
+--- perl-5.10.0/util.c	2007-12-18 10:47:08.000000000 +0000
++++ perl-5.10.0-dtrace/util.c	2008-04-06 22:18:33.000000000 +0100
+@@ -4725,14 +4725,17 @@
+ SV *
+ Perl_vstringify(pTHX_ SV *vs)
+ {
+-    SV *pv;
++    SV *pv, **rv;
+     if ( SvROK(vs) )
+ 	vs = SvRV(vs);
+     
+     if ( !vverify(vs) )
+ 	Perl_croak(aTHX_ "Invalid version object");
+ 
+-    pv = *hv_fetchs((HV*)vs, "original", FALSE);
++    rv = hv_fetchs((HV*)vs, "original", FALSE);
++    if ( !rv )
++        return &PL_sv_undef;
++    pv = *rv;
+     if ( SvPOK(pv) ) 
+ 	return newSVsv(pv);
+     else

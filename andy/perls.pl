@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
+use YAML;
 use Perl::Version;
 
 my $like_version = Perl::Version::REGEX;
@@ -47,12 +48,20 @@ my @version = qw(
 );
 
 @version = map {
-  { description => "Perl $_->[0]", source => $_->[1], patches => [] }
+  {
+    description => "Perl $_->[0]",
+    source      => $_->[1],
+    patches     => [
+      $_->[0] == Perl::Version->new( '5.10.0' )
+      ? ( 'dtrace-5.10.0.patch' )
+      : ()
+    ]
+  }
  }
  sort { $a->[0] <=> $b->[0] }
  map { [ Perl::Version->new( join '', ( $_ =~ $like_version ) ), $_ ] }
  @version;
-print Dumper( \@version );
+print Dump( \@version );
 
 # vim:ts=2:sw=2:sts=2:et:ft=perl
 
