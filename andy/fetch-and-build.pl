@@ -18,7 +18,7 @@ mkpath( $BUILD );
 my $versions = LoadFile( 'versions.yaml' );
 
 my $ua = LWP::UserAgent->new;
-for my $ver ( @$versions ) {
+for my $ver ( reverse @$versions ) {
   my $src = $CPAN . $ver->{source};
   my ( $dst ) = ( $src =~ m{/([^/]+)$} );
   my $ver = Perl::Version->new( join '', ( $dst =~ $like_version ) );
@@ -36,7 +36,18 @@ for my $ver ( @$versions ) {
   print "$cmd\n";
   ( my $dir = $dst ) =~ s/\.tar\.gz$//g;
   system(
-    "cd $BUILD && rm -rf $dir && tar zxf $dst && cd $dir && $cmd > stdout 2> stderr && make && make test && make install" );
+    join ' && ',
+    "cd $BUILD",
+    "rm -rf $dir",
+    "tar zxf $dst",
+    "cp -r $dir $dir.orig",
+    "cd $dir",
+    "echo '$cmd' > reconfig.sh",
+    "$cmd | tee stdout.config 2>&1",
+    "make | tee stdout.make 2>&1",
+    "make test | tee stdout.test 2>&1",
+    "make install | tee stdout.install 2>&1"
+  );
 
 }
 
