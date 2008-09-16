@@ -1,0 +1,10 @@
+diff -r --unified=0 perl-5.8.6.orig/makedepend.SH perl-5.8.6/makedepend.SH
+--- perl-5.8.6.orig/makedepend.SH	2008-09-15 15:58:50.000000000 +0100
++++ perl-5.8.6/makedepend.SH	2008-09-16 02:01:14.000000000 +0100
+@@ -131 +131 @@
+-    */*) finc="-I`echo $file | sed 's#/[^/]*$##`" ;;
++    */*) finc="-I`echo $file | sed 's#/[^/]*$##'`" ;;
+@@ -169,0 +170 @@
++            -e '/^#.*<command-line>/d' \
+@@ -170,0 +172 @@
++	    -e '/^#.*"\/.*\/"/d' \

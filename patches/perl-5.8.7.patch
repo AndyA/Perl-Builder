@@ -1,0 +1,17 @@
+diff -r --unified=0 perl-5.8.7.orig/ext/DB_File/t/db-recno.t perl-5.8.7/ext/DB_File/t/db-recno.t
+--- perl-5.8.7.orig/ext/DB_File/t/db-recno.t	2008-09-15 15:48:30.000000000 +0100
++++ perl-5.8.7/ext/DB_File/t/db-recno.t	2008-09-16 01:45:53.000000000 +0100
+@@ -2,0 +3,3 @@
++print "1..0 # SKIP Unknown\n";
++exit 0;
++
+diff -r --unified=0 perl-5.8.7.orig/makedepend.SH perl-5.8.7/makedepend.SH
+--- perl-5.8.7.orig/makedepend.SH	2008-09-15 15:48:29.000000000 +0100
++++ perl-5.8.7/makedepend.SH	2008-09-16 01:32:06.000000000 +0100
+@@ -131 +131 @@
+-    */*) finc="-I`echo $file | sed 's#/[^/]*$##`" ;;
++    */*) finc="-I`echo $file | sed 's#/[^/]*$##'`" ;;
+@@ -169,0 +170 @@
++            -e '/^#.*<command-line>/d' \
+@@ -170,0 +172 @@
++	    -e '/^#.*"\/.*\/"/d' \
