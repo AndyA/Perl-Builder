@@ -8,9 +8,10 @@ use File::Path;
 use LWP::UserAgent;
 use Perl::Version;
 
-my $CPAN  = 'http://cpan.ripley/';
-my $BUILD = 'build';
-my $INST  = 'inst';
+my $CPAN    = 'http://cpan.ripley/';
+my $BUILD   = 'build';
+my $INST    = 'inst';
+my $PATCHES = 'patches';
 
 my $like_version = Perl::Version::REGEX;
 
@@ -35,6 +36,11 @@ for my $ver ( reverse @$versions ) {
   my $cmd = join( ' ', @cmd );
   print "$cmd\n";
   ( my $dir = $dst ) =~ s/\.tar\.gz$//g;
+  my @prepare = ();
+  my $patch   = File::Spec->rel2abs(
+    File::Spec->catfile( $PATCHES, "$dir.patch" ) );
+  push @prepare, "patch -p1 < $patch | tee stdout.patch 2>&1"
+   if -f $patch;
   system(
     join ' && ',
     "cd $BUILD",
@@ -42,6 +48,7 @@ for my $ver ( reverse @$versions ) {
     "tar zxf $dst",
     "cp -r $dir $dir.orig",
     "cd $dir",
+    @prepare,
     "echo '$cmd' > reconfig.sh",
     "$cmd | tee stdout.config 2>&1",
     "make | tee stdout.make 2>&1",

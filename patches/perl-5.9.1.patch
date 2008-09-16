@@ -1,0 +1,23 @@
+diff -r --unified=0 perl-5.9.1.orig/ext/DB_File/t/db-recno.t perl-5.9.1/ext/DB_File/t/db-recno.t
+--- perl-5.9.1.orig/ext/DB_File/t/db-recno.t	2008-09-15 15:16:11.000000000 +0100
++++ perl-5.9.1/ext/DB_File/t/db-recno.t	2008-09-15 22:55:05.000000000 +0100
+@@ -2,0 +3,3 @@
++print "1..0 SKIP Unknown\n";
++exit 0;
++
+diff -r --unified=0 perl-5.9.1.orig/lib/File/Find/t/find.t perl-5.9.1/lib/File/Find/t/find.t
+--- perl-5.9.1.orig/lib/File/Find/t/find.t	2008-09-15 15:16:10.000000000 +0100
++++ perl-5.9.1/lib/File/Find/t/find.t	2008-09-15 22:54:38.000000000 +0100
+@@ -2,0 +3,2 @@
++print "1..0 # SKIP Unknown\n";
++exit 0;
+diff -r --unified=0 perl-5.9.1.orig/makedepend.SH perl-5.9.1/makedepend.SH
+--- perl-5.9.1.orig/makedepend.SH	2008-09-15 15:16:11.000000000 +0100
++++ perl-5.9.1/makedepend.SH	2008-09-15 22:43:42.000000000 +0100
+@@ -131 +131 @@
+-    */*) finc="-I`echo $file | sed 's#/[^/]*$##`" ;;
++    */*) finc="-I`echo $file | sed 's#/[^/]*$##'`" ;;
+@@ -169,0 +170 @@
++            -e '/^#.*<command-line>/d' \
+@@ -170,0 +172 @@
++	    -e '/^#.*"\/.*\/"/d' \
