@@ -39,7 +39,7 @@ for my $ver ( reverse @$versions ) {
   my @prepare = ();
   my $patch   = File::Spec->rel2abs(
     File::Spec->catfile( $PATCHES, "$dir.patch" ) );
-  push @prepare, "patch -p1 < $patch | tee stdout.patch 2>&1"
+  push @prepare, "patch --get=0 -t -p1 < $patch | tee stdout.patch 2>&1"
    if -f $patch;
   system(
     join ' && ',
