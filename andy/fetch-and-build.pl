@@ -39,22 +39,25 @@ for my $ver ( reverse @$versions ) {
   my @prepare = ();
   my $patch   = File::Spec->rel2abs(
     File::Spec->catfile( $PATCHES, "$dir.patch" ) );
-  push @prepare, "patch --get=0 -t -p1 < $patch | tee stdout.patch 2>&1"
+  #push @prepare, "patch --get=0 -t -p1 < $patch | tee stdout.patch 2>&1"
+  push @prepare, "yes n | patch -t -p1 < $patch | tee stdout.patch 2>&1"
    if -f $patch;
-  system(
-    join ' && ',
-    "cd $BUILD",
-    "rm -rf $dir",
-    "tar zxf $dst",
-    "cp -r $dir $dir.orig",
-    "cd $dir",
-    @prepare,
-    "echo '$cmd' > reconfig.sh",
-    "$cmd | tee stdout.config 2>&1",
-    "make | tee stdout.make 2>&1",
-    "make test | tee stdout.test 2>&1",
-    "make install | tee stdout.install 2>&1"
-  );
+  my $build_cmd
+   = join ' && ',
+   "cd $BUILD",
+   "rm -rf $dir",
+   "tar zxf $dst",
+   "cp -r $dir $dir.orig",
+   "cd $dir",
+   "chmod -R u+w .",
+   @prepare,
+   "echo '$cmd' > reconfig.sh",
+   "$cmd | tee stdout.config 2>&1",
+   "make | tee stdout.make 2>&1",
+   "make test | tee stdout.test 2>&1",
+   "make install | tee stdout.install 2>&1";
+  print "$build_cmd\n";
+  system $build_cmd;
 
 }
 
