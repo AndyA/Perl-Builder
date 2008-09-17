@@ -1,0 +1,15 @@
+diff -r --unified=0 perl-5.8.0.orig/makedepend.SH perl-5.8.0/makedepend.SH
+--- perl-5.8.0.orig/makedepend.SH	2008-09-15 16:56:17.000000000 +0100
++++ perl-5.8.0/makedepend.SH	2008-09-17 16:58:29.000000000 +0100
+@@ -126 +126 @@
+-    */*) finc="-I`echo $file | sed 's#/[^/]*$##`" ;;
++    */*) finc="-I`echo $file | sed 's#/[^/]*$##'`" ;;
+@@ -159,0 +160 @@
++            -e '/^#.*<command-line>/d' \
+@@ -160,0 +162 @@
++	    -e '/^#.*"\/.*\/"/d' \
+diff -r --unified=0 perl-5.8.0.orig/patchlevel.h perl-5.8.0/patchlevel.h
+--- perl-5.8.0.orig/patchlevel.h	2008-09-15 16:56:18.000000000 +0100
++++ perl-5.8.0/patchlevel.h	2008-09-17 17:48:31.000000000 +0100
+@@ -81,0 +82 @@
++	, "Perl::Builder - config / build patches"

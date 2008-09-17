@@ -21,3 +21,8 @@ diff -r --unified=0 perl-5.9.0.orig/makedepend.SH perl-5.9.0/makedepend.SH
 +            -e '/^#.*<command-line>/d' \
 @@ -170,0 +172 @@
 +	    -e '/^#.*"\/.*\/"/d' \
+diff -r --unified=0 perl-5.9.0.orig/patchlevel.h perl-5.9.0/patchlevel.h
+--- perl-5.9.0.orig/patchlevel.h	2008-09-15 15:26:00.000000000 +0100
++++ perl-5.9.0/patchlevel.h	2008-09-17 17:48:31.000000000 +0100
+@@ -122,0 +123 @@
++	, "Perl::Builder - config / build patches"
