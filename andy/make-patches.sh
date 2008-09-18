@@ -9,7 +9,7 @@ for orig in *.orig ; do
   name=`basename $dir`
   patch=$patches/$name.patch
   echo Extracting patches for $name
-  diff -r --unified=0 $orig $dir | egrep -v '^Only in ' > $patch
+  diff -ru $orig $dir | egrep -v '^Only in ' > $patch
   [ -s $patch ] || rm -f $patch
 done
 

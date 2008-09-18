@@ -1,28 +1,56 @@
-diff -r --unified=0 perl-5.8.2.orig/ext/DB_File/t/db-recno.t perl-5.8.2/ext/DB_File/t/db-recno.t
+diff -ru perl-5.8.2.orig/ext/DB_File/t/db-recno.t perl-5.8.2/ext/DB_File/t/db-recno.t
 --- perl-5.8.2.orig/ext/DB_File/t/db-recno.t	2008-09-17 22:49:26.000000000 +0100
 +++ perl-5.8.2/ext/DB_File/t/db-recno.t	2008-09-17 22:49:26.000000000 +0100
-@@ -2,0 +3,3 @@
+@@ -1,5 +1,8 @@
+ #!./perl -w
+ 
 +print "1..0 # SKIP Unknown\n";
 +exit 0;
 +
-diff -r --unified=0 perl-5.8.2.orig/lib/File/Find/t/find.t perl-5.8.2/lib/File/Find/t/find.t
+ BEGIN {
+     unless(grep /blib/, @INC) {
+         chdir 't' if -d 't';
+diff -ru perl-5.8.2.orig/lib/File/Find/t/find.t perl-5.8.2/lib/File/Find/t/find.t
 --- perl-5.8.2.orig/lib/File/Find/t/find.t	2008-09-17 22:49:26.000000000 +0100
 +++ perl-5.8.2/lib/File/Find/t/find.t	2008-09-17 22:49:26.000000000 +0100
-@@ -2,0 +3,2 @@
+@@ -1,5 +1,7 @@
+ #!./perl
+ 
 +print "1..0 # SKIP Unknown\n";
 +exit 0;
-diff -r --unified=0 perl-5.8.2.orig/makedepend.SH perl-5.8.2/makedepend.SH
+ 
+ my %Expect_File = (); # what we expect for $_ 
+ my %Expect_Name = (); # what we expect for $File::Find::name/fullname
+diff -ru perl-5.8.2.orig/makedepend.SH perl-5.8.2/makedepend.SH
 --- perl-5.8.2.orig/makedepend.SH	2008-09-17 22:49:26.000000000 +0100
 +++ perl-5.8.2/makedepend.SH	2008-09-17 22:49:26.000000000 +0100
-@@ -131 +131 @@
+@@ -128,7 +128,7 @@
+     *.y) filebase=`basename $file .y` ;;
+     esac
+     case "$file" in
 -    */*) finc="-I`echo $file | sed 's#/[^/]*$##`" ;;
 +    */*) finc="-I`echo $file | sed 's#/[^/]*$##'`" ;;
-@@ -169,0 +170 @@
+     *)   finc= ;;
+     esac
+     $echo "Finding dependencies for $filebase$_o."
+@@ -167,7 +167,9 @@
+             -e '/^#.*<builtin>/d' \
+             -e '/^#.*<built-in>/d' \
+             -e '/^#.*<command line>/d' \
 +            -e '/^#.*<command-line>/d' \
-@@ -170,0 +172 @@
+ 	    -e '/^#.*"-"/d' \
 +	    -e '/^#.*"\/.*\/"/d' \
-diff -r --unified=0 perl-5.8.2.orig/patchlevel.h perl-5.8.2/patchlevel.h
+ 	    -e '/: file path prefix .* never used$/d' \
+ 	    -e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
+ 	    -e 's/^[	 ]*#[	 ]*line/#/' \
+diff -ru perl-5.8.2.orig/patchlevel.h perl-5.8.2/patchlevel.h
 --- perl-5.8.2.orig/patchlevel.h	2008-09-17 22:49:26.000000000 +0100
-+++ perl-5.8.2/patchlevel.h	2008-09-18 03:03:18.000000000 +0100
-@@ -122,0 +123 @@
++++ perl-5.8.2/patchlevel.h	2008-09-18 18:11:05.000000000 +0100
+@@ -120,6 +120,7 @@
+ #if !defined(PERL_PATCHLEVEL_H_IMPLICIT) && !defined(LOCAL_PATCH_COUNT)
+ static	char	*local_patches[] = {
+         NULL
 +	, "Perl::Builder - config / build patches"
+ 	,NULL
+ };
+ 

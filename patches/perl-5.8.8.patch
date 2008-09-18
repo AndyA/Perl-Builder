@@ -1,15 +1,33 @@
-diff -r --unified=0 perl-5.8.8.orig/makedepend.SH perl-5.8.8/makedepend.SH
+diff -ru perl-5.8.8.orig/makedepend.SH perl-5.8.8/makedepend.SH
 --- perl-5.8.8.orig/makedepend.SH	2008-09-17 21:44:17.000000000 +0100
 +++ perl-5.8.8/makedepend.SH	2008-09-17 21:44:17.000000000 +0100
-@@ -131 +131 @@
+@@ -128,7 +128,7 @@
+     *.y) filebase=`basename $file .y` ;;
+     esac
+     case "$file" in
 -    */*) finc="-I`echo $file | sed 's#/[^/]*$##`" ;;
 +    */*) finc="-I`echo $file | sed 's#/[^/]*$##'`" ;;
-@@ -169,0 +170 @@
+     *)   finc= ;;
+     esac
+     $echo "Finding dependencies for $filebase$_o."
+@@ -167,7 +167,9 @@
+             -e '/^#.*<builtin>/d' \
+             -e '/^#.*<built-in>/d' \
+             -e '/^#.*<command line>/d' \
 +            -e '/^#.*<command-line>/d' \
-@@ -170,0 +172 @@
+ 	    -e '/^#.*"-"/d' \
 +	    -e '/^#.*"\/.*\/"/d' \
-diff -r --unified=0 perl-5.8.8.orig/patchlevel.h perl-5.8.8/patchlevel.h
+ 	    -e '/: file path prefix .* never used$/d' \
+ 	    -e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
+ 	    -e 's/^[	 ]*#[	 ]*line/#/' \
+diff -ru perl-5.8.8.orig/patchlevel.h perl-5.8.8/patchlevel.h
 --- perl-5.8.8.orig/patchlevel.h	2008-09-17 21:44:17.000000000 +0100
-+++ perl-5.8.8/patchlevel.h	2008-09-18 03:03:18.000000000 +0100
-@@ -123,0 +124 @@
++++ perl-5.8.8/patchlevel.h	2008-09-18 18:11:05.000000000 +0100
+@@ -121,6 +121,7 @@
+ #if !defined(PERL_PATCHLEVEL_H_IMPLICIT) && !defined(LOCAL_PATCH_COUNT)
+ static const char *local_patches[] = {
+ 	NULL
 +	, "Perl::Builder - config / build patches"
+ 	,NULL
+ };
+ 

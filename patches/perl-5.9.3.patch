@@ -1,22 +1,45 @@
-diff -r --unified=0 perl-5.9.3.orig/ext/Devel/Peek/t/Peek.t perl-5.9.3/ext/Devel/Peek/t/Peek.t
+diff -ru perl-5.9.3.orig/ext/Devel/Peek/t/Peek.t perl-5.9.3/ext/Devel/Peek/t/Peek.t
 --- perl-5.9.3.orig/ext/Devel/Peek/t/Peek.t	2008-09-17 21:00:13.000000000 +0100
 +++ perl-5.9.3/ext/Devel/Peek/t/Peek.t	2008-09-17 21:00:14.000000000 +0100
-@@ -2,0 +3,3 @@
+@@ -1,5 +1,8 @@
+ #!./perl -T
+ 
 +print "1..0 # SKIP Segfaults\n";
 +exit 0;
 +
-diff -r --unified=0 perl-5.9.3.orig/makedepend.SH perl-5.9.3/makedepend.SH
+ BEGIN {
+     chdir 't' if -d 't';
+     @INC = '../lib';
+diff -ru perl-5.9.3.orig/makedepend.SH perl-5.9.3/makedepend.SH
 --- perl-5.9.3.orig/makedepend.SH	2008-09-17 21:00:13.000000000 +0100
 +++ perl-5.9.3/makedepend.SH	2008-09-17 21:00:14.000000000 +0100
-@@ -131 +131 @@
+@@ -128,7 +128,7 @@
+     *.y) filebase=`basename $file .y` ;;
+     esac
+     case "$file" in
 -    */*) finc="-I`echo $file | sed 's#/[^/]*$##`" ;;
 +    */*) finc="-I`echo $file | sed 's#/[^/]*$##'`" ;;
-@@ -169,0 +170 @@
+     *)   finc= ;;
+     esac
+     $echo "Finding dependencies for $filebase$_o."
+@@ -167,7 +167,9 @@
+             -e '/^#.*<builtin>/d' \
+             -e '/^#.*<built-in>/d' \
+             -e '/^#.*<command line>/d' \
 +            -e '/^#.*<command-line>/d' \
-@@ -170,0 +172 @@
+ 	    -e '/^#.*"-"/d' \
 +	    -e '/^#.*"\/.*\/"/d' \
-diff -r --unified=0 perl-5.9.3.orig/patchlevel.h perl-5.9.3/patchlevel.h
+ 	    -e '/: file path prefix .* never used$/d' \
+ 	    -e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
+ 	    -e 's/^[	 ]*#[	 ]*line/#/' \
+diff -ru perl-5.9.3.orig/patchlevel.h perl-5.9.3/patchlevel.h
 --- perl-5.9.3.orig/patchlevel.h	2008-09-17 21:00:13.000000000 +0100
-+++ perl-5.9.3/patchlevel.h	2008-09-18 03:03:18.000000000 +0100
-@@ -120,0 +121 @@
++++ perl-5.9.3/patchlevel.h	2008-09-18 18:11:05.000000000 +0100
+@@ -118,6 +118,7 @@
+ #if !defined(PERL_PATCHLEVEL_H_IMPLICIT) && !defined(LOCAL_PATCH_COUNT)
+ static const char * const local_patches[] = {
+ 	NULL
 +	, "Perl::Builder - config / build patches"
+ 	,NULL
+ };
+ 

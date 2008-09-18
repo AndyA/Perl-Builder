@@ -1,3 +1,41 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+my $patch = shift;
+( my $test_patch = $patch ) =~ s{(^|/)perl}{$1test}
+ or die "Can't make $patch into a test patch name\n";
+my $name_map = { test => $test_patch, non_test => $patch };
+
+my $stash = { test => [], non_test => [], spill => [] };
+my $sel = undef;
+open my $ip, '<', $patch or die "Can't read $patch ($!)\n";
+while ( defined( my $line = <$ip> ) ) {
+  if ( $line =~ /^diff/ ) {
+    $sel = 'spill';
+  }
+  elsif ( $line =~ /^---\s+(\S+)/ ) {
+    my $file = $1;
+    $sel = ( $file =~ /\.t$/ ? 'test' : 'non_test' );
+    push @{ $stash->{$sel} }, splice @{ $stash->{spill} };
+  }
+  die "Huh?" unless defined $sel;
+  push @{ $stash->{$sel} }, $line;
+}
+
+for my $type ( keys %$name_map ) {
+  if ( @{ $stash->{$type} } ) {
+    my $new_patch = $name_map->{$type};
+    open my $op, '>', $new_patch or die "Can't write $new_patch ($!)\n";
+    print $op join '', @{ $stash->{$type} };
+  }
+}
+
+# vim:ts=2:sw=2:sts=2:et:ft=perl
+
+__END__
+
 diff -ru perl-5.7.3.orig/ext/DB_File/DB_File.xs perl-5.7.3/ext/DB_File/DB_File.xs
 --- perl-5.7.3.orig/ext/DB_File/DB_File.xs	2008-09-17 23:12:49.000000000 +0100
 +++ perl-5.7.3/ext/DB_File/DB_File.xs	2008-09-18 02:48:06.000000000 +0100
