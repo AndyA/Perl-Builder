@@ -1,19 +1,19 @@
 diff -r --unified=0 perl-5.8.3.orig/ext/DB_File/t/db-recno.t perl-5.8.3/ext/DB_File/t/db-recno.t
---- perl-5.8.3.orig/ext/DB_File/t/db-recno.t	2008-09-15 16:28:40.000000000 +0100
-+++ perl-5.8.3/ext/DB_File/t/db-recno.t	2008-09-16 23:32:06.000000000 +0100
+--- perl-5.8.3.orig/ext/DB_File/t/db-recno.t	2008-09-17 22:39:30.000000000 +0100
++++ perl-5.8.3/ext/DB_File/t/db-recno.t	2008-09-17 22:39:30.000000000 +0100
 @@ -2,0 +3,3 @@
 +print "1..0 # SKIP Unknown\n";
 +exit 0;
 +
 diff -r --unified=0 perl-5.8.3.orig/lib/File/Find/t/find.t perl-5.8.3/lib/File/Find/t/find.t
---- perl-5.8.3.orig/lib/File/Find/t/find.t	2008-09-15 16:28:40.000000000 +0100
-+++ perl-5.8.3/lib/File/Find/t/find.t	2008-09-16 23:31:48.000000000 +0100
+--- perl-5.8.3.orig/lib/File/Find/t/find.t	2008-09-17 22:39:30.000000000 +0100
++++ perl-5.8.3/lib/File/Find/t/find.t	2008-09-17 22:39:30.000000000 +0100
 @@ -2,0 +3,2 @@
 +print "1..0 # SKIP Unknown\n";
 +exit 0;
 diff -r --unified=0 perl-5.8.3.orig/makedepend.SH perl-5.8.3/makedepend.SH
---- perl-5.8.3.orig/makedepend.SH	2008-09-15 16:28:40.000000000 +0100
-+++ perl-5.8.3/makedepend.SH	2008-09-16 23:15:30.000000000 +0100
+--- perl-5.8.3.orig/makedepend.SH	2008-09-17 22:39:30.000000000 +0100
++++ perl-5.8.3/makedepend.SH	2008-09-17 22:39:31.000000000 +0100
 @@ -131 +131 @@
 -    */*) finc="-I`echo $file | sed 's#/[^/]*$##`" ;;
 +    */*) finc="-I`echo $file | sed 's#/[^/]*$##'`" ;;
@@ -22,7 +22,7 @@ diff -r --unified=0 perl-5.8.3.orig/makedepend.SH perl-5.8.3/makedepend.SH
 @@ -170,0 +172 @@
 +	    -e '/^#.*"\/.*\/"/d' \
 diff -r --unified=0 perl-5.8.3.orig/patchlevel.h perl-5.8.3/patchlevel.h
---- perl-5.8.3.orig/patchlevel.h	2008-09-15 16:28:40.000000000 +0100
-+++ perl-5.8.3/patchlevel.h	2008-09-17 17:48:31.000000000 +0100
+--- perl-5.8.3.orig/patchlevel.h	2008-09-17 22:39:30.000000000 +0100
++++ perl-5.8.3/patchlevel.h	2008-09-18 03:03:18.000000000 +0100
 @@ -122,0 +123 @@
 +	, "Perl::Builder - config / build patches"

@@ -1,34 +1,34 @@
 diff -r --unified=0 perl-5.9.4.orig/ext/Devel/Peek/t/Peek.t perl-5.9.4/ext/Devel/Peek/t/Peek.t
---- perl-5.9.4.orig/ext/Devel/Peek/t/Peek.t	2008-09-15 14:41:10.000000000 +0100
-+++ perl-5.9.4/ext/Devel/Peek/t/Peek.t	2008-09-15 18:35:03.000000000 +0100
+--- perl-5.9.4.orig/ext/Devel/Peek/t/Peek.t	2008-09-17 20:45:44.000000000 +0100
++++ perl-5.9.4/ext/Devel/Peek/t/Peek.t	2008-09-17 20:45:45.000000000 +0100
 @@ -2,0 +3,3 @@
 +print "1..0 # SKIP: Unknown\n";
 +exit 0;
 +
 diff -r --unified=0 perl-5.9.4.orig/ext/POSIX/t/sysconf.t perl-5.9.4/ext/POSIX/t/sysconf.t
---- perl-5.9.4.orig/ext/POSIX/t/sysconf.t	2008-09-15 14:41:10.000000000 +0100
-+++ perl-5.9.4/ext/POSIX/t/sysconf.t	2008-09-15 18:35:19.000000000 +0100
+--- perl-5.9.4.orig/ext/POSIX/t/sysconf.t	2008-09-17 20:45:44.000000000 +0100
++++ perl-5.9.4/ext/POSIX/t/sysconf.t	2008-09-17 20:45:45.000000000 +0100
 @@ -2,0 +3,3 @@
 +print "1..0 # SKIP: Unknown\n";
 +exit 0;
 +
 diff -r --unified=0 perl-5.9.4.orig/ext/XS/APItest/t/op.t perl-5.9.4/ext/XS/APItest/t/op.t
---- perl-5.9.4.orig/ext/XS/APItest/t/op.t	2008-09-15 14:41:10.000000000 +0100
-+++ perl-5.9.4/ext/XS/APItest/t/op.t	2008-09-15 18:35:27.000000000 +0100
+--- perl-5.9.4.orig/ext/XS/APItest/t/op.t	2008-09-17 20:45:44.000000000 +0100
++++ perl-5.9.4/ext/XS/APItest/t/op.t	2008-09-17 20:45:45.000000000 +0100
 @@ -2,0 +3,3 @@
 +print "1..0 # SKIP: Unknown\n";
 +exit 0;
 +
 diff -r --unified=0 perl-5.9.4.orig/makedepend.SH perl-5.9.4/makedepend.SH
---- perl-5.9.4.orig/makedepend.SH	2008-09-15 14:41:10.000000000 +0100
-+++ perl-5.9.4/makedepend.SH	2008-09-15 21:38:02.000000000 +0100
+--- perl-5.9.4.orig/makedepend.SH	2008-09-17 20:45:44.000000000 +0100
++++ perl-5.9.4/makedepend.SH	2008-09-17 20:45:45.000000000 +0100
 @@ -131 +131 @@
 -    */*) finc="-I`echo $file | sed 's#/[^/]*$##`" ;;
 +    */*) finc="-I`echo $file | sed 's#/[^/]*$##'`" ;;
 @@ -171,0 +172 @@
 +	    -e '/^#.*"\/.*\/"/d' \
 diff -r --unified=0 perl-5.9.4.orig/patchlevel.h perl-5.9.4/patchlevel.h
---- perl-5.9.4.orig/patchlevel.h	2008-09-15 14:41:10.000000000 +0100
-+++ perl-5.9.4/patchlevel.h	2008-09-17 17:48:31.000000000 +0100
+--- perl-5.9.4.orig/patchlevel.h	2008-09-17 20:45:44.000000000 +0100
++++ perl-5.9.4/patchlevel.h	2008-09-18 03:03:18.000000000 +0100
 @@ -120,0 +121 @@
 +	, "Perl::Builder - config / build patches"

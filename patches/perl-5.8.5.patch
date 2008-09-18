@@ -1,13 +1,13 @@
 diff -r --unified=0 perl-5.8.5.orig/ext/DB_File/t/db-recno.t perl-5.8.5/ext/DB_File/t/db-recno.t
---- perl-5.8.5.orig/ext/DB_File/t/db-recno.t	2008-09-15 16:09:14.000000000 +0100
-+++ perl-5.8.5/ext/DB_File/t/db-recno.t	2008-09-16 22:36:40.000000000 +0100
+--- perl-5.8.5.orig/ext/DB_File/t/db-recno.t	2008-09-17 22:18:25.000000000 +0100
++++ perl-5.8.5/ext/DB_File/t/db-recno.t	2008-09-17 22:18:26.000000000 +0100
 @@ -2,0 +3,3 @@
 +print "1..0 # SKIP Unknown\n";
 +exit 0;
 +
 diff -r --unified=0 perl-5.8.5.orig/makedepend.SH perl-5.8.5/makedepend.SH
---- perl-5.8.5.orig/makedepend.SH	2008-09-15 16:09:14.000000000 +0100
-+++ perl-5.8.5/makedepend.SH	2008-09-16 22:19:05.000000000 +0100
+--- perl-5.8.5.orig/makedepend.SH	2008-09-17 22:18:25.000000000 +0100
++++ perl-5.8.5/makedepend.SH	2008-09-17 22:18:26.000000000 +0100
 @@ -131 +131 @@
 -    */*) finc="-I`echo $file | sed 's#/[^/]*$##`" ;;
 +    */*) finc="-I`echo $file | sed 's#/[^/]*$##'`" ;;
@@ -16,7 +16,7 @@ diff -r --unified=0 perl-5.8.5.orig/makedepend.SH perl-5.8.5/makedepend.SH
 @@ -170,0 +172 @@
 +	    -e '/^#.*"\/.*\/"/d' \
 diff -r --unified=0 perl-5.8.5.orig/patchlevel.h perl-5.8.5/patchlevel.h
---- perl-5.8.5.orig/patchlevel.h	2008-09-15 16:09:14.000000000 +0100
-+++ perl-5.8.5/patchlevel.h	2008-09-17 17:48:31.000000000 +0100
+--- perl-5.8.5.orig/patchlevel.h	2008-09-17 22:18:25.000000000 +0100
++++ perl-5.8.5/patchlevel.h	2008-09-18 03:03:18.000000000 +0100
 @@ -122,0 +123 @@
 +	, "Perl::Builder - config / build patches"

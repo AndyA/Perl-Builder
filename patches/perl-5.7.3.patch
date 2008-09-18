@@ -1,0 +1,60 @@
+diff -r --unified=0 perl-5.7.3.orig/ext/DB_File/DB_File.xs perl-5.7.3/ext/DB_File/DB_File.xs
+--- perl-5.7.3.orig/ext/DB_File/DB_File.xs	2008-09-17 23:12:49.000000000 +0100
++++ perl-5.7.3/ext/DB_File/DB_File.xs	2008-09-18 02:48:06.000000000 +0100
+@@ -185,0 +186,4 @@
++#if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
++#    define AT_LEAST_DB_4_1
++#endif
++
+@@ -1368,0 +1373,4 @@
++#ifdef AT_LEAST_DB_4_1
++        status = (RETVAL->dbp->open)(RETVAL->dbp, NULL, name, NULL, RETVAL->type, 
++	    			Flags, mode) ; 
++#else
+@@ -1370,0 +1379 @@
++#endif
+diff -r --unified=0 perl-5.7.3.orig/makedepend.SH perl-5.7.3/makedepend.SH
+--- perl-5.7.3.orig/makedepend.SH	2008-09-17 23:12:48.000000000 +0100
++++ perl-5.7.3/makedepend.SH	2008-09-18 02:38:29.000000000 +0100
+@@ -21,4 +20,0 @@
+-case "$osname" in
+-amigaos) cat=/bin/cat ;; # must be absolute
+-esac
+-
+@@ -35,0 +32,7 @@
++if test -d .depending; then
++	echo "$0: Already running, exiting."
++	exit 0
++fi
++
++mkdir .depending
++
+@@ -64,0 +68,4 @@
++case "$osname" in
++amigaos) cat=/bin/cat ;; # must be absolute
++esac
++
+@@ -119 +126 @@
+-    */*) finc="-I`echo $file | sed 's#/[^/]*$##`" ;;
++    */*) finc="-I`echo $file | sed 's#/[^/]*$##'`" ;;
+@@ -146 +153 @@
+-        $cppstdin $finc -I. $cppflags $cppminus <UU/$file.c 2>&1 |
++        $cppstdin $finc -I. $cppflags $cppminus <UU/$file.c >.cout 2>.cerr
+@@ -150,0 +158 @@
++            -e '/^#.*<built-in>/d' \
+@@ -151,0 +160 @@
++            -e '/^#.*<command-line>/d' \
+@@ -152,0 +162 @@
++	    -e '/^#.*"\/.*\/"/d' \
+@@ -160 +170 @@
+-	    -e 's|\.c\.c|.c|' $uwinfix | \
++           -e 's|\.c\.c|.c|' $uwinfix .cout .cerr| \
+@@ -225 +235,2 @@
+-$rm -rf .deptmp UU .shlist .clist .hlist .hsed
++$rm -rf .deptmp UU .shlist .clist .hlist .hsed .cout .cerr
++rmdir .depending
+diff -r --unified=0 perl-5.7.3.orig/patchlevel.h perl-5.7.3/patchlevel.h
+--- perl-5.7.3.orig/patchlevel.h	2008-09-17 23:12:48.000000000 +0100
++++ perl-5.7.3/patchlevel.h	2008-09-18 03:03:18.000000000 +0100
+@@ -81,0 +82 @@
++	, "Perl::Builder - config / build patches"
