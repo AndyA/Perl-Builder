@@ -3,32 +3,39 @@
 use strict;
 use warnings;
 
-my $patch = shift;
-( my $test_patch = $patch ) =~ s{(^|/)perl}{$1test}
- or die "Can't make $patch into a test patch name\n";
-my $name_map = { test => $test_patch, non_test => $patch };
-
-my $stash = { test => [], non_test => [], spill => [] };
-my $sel = undef;
-open my $ip, '<', $patch or die "Can't read $patch ($!)\n";
-while ( defined( my $line = <$ip> ) ) {
-  if ( $line =~ /^diff/ ) {
-    $sel = 'spill';
-  }
-  elsif ( $line =~ /^---\s+(\S+)/ ) {
-    my $file = $1;
-    $sel = ( $file =~ /\.t$/ ? 'test' : 'non_test' );
-    push @{ $stash->{$sel} }, splice @{ $stash->{spill} };
-  }
-  die "Huh?" unless defined $sel;
-  push @{ $stash->{$sel} }, $line;
+while ( my $patch = shift ) {
+  split_patch( $patch );
 }
 
-for my $type ( keys %$name_map ) {
-  if ( @{ $stash->{$type} } ) {
-    my $new_patch = $name_map->{$type};
-    open my $op, '>', $new_patch or die "Can't write $new_patch ($!)\n";
-    print $op join '', @{ $stash->{$type} };
+sub split_patch {
+  my $patch = shift;
+  ( my $test_patch = $patch ) =~ s{(^|/)perl}{$1test}
+   or die "Can't make $patch into a test patch name\n";
+  my $name_map = { test => $test_patch, non_test => $patch };
+
+  my $stash = { test => [], non_test => [], spill => [] };
+  my $sel = undef;
+  open my $ip, '<', $patch or die "Can't read $patch ($!)\n";
+  while ( defined( my $line = <$ip> ) ) {
+    if ( $line =~ /^diff/ ) {
+      $sel = 'spill';
+    }
+    elsif ( $line =~ /^---\s+(\S+)/ ) {
+      my $file = $1;
+      $sel = ( $file =~ /\.t$/ ? 'test' : 'non_test' );
+      push @{ $stash->{$sel} }, splice @{ $stash->{spill} };
+    }
+    die "Huh?" unless defined $sel;
+    push @{ $stash->{$sel} }, $line;
+  }
+
+  for my $type ( keys %$name_map ) {
+    if ( @{ $stash->{$type} } ) {
+      my $new_patch = $name_map->{$type};
+      open my $op, '>', $new_patch
+       or die "Can't write $new_patch ($!)\n";
+      print $op join '', @{ $stash->{$type} };
+    }
   }
 }
 
