@@ -1,6 +1,6 @@
 diff -ru perl-5.7.2.orig/Configure perl-5.7.2/Configure
---- perl-5.7.2.orig/Configure	2008-09-19 02:30:46.000000000 +0100
-+++ perl-5.7.2/Configure	2008-09-19 02:30:46.000000000 +0100
+--- perl-5.7.2.orig/Configure	2008-09-19 16:53:42.000000000 +0100
++++ perl-5.7.2/Configure	2008-09-19 16:53:43.000000000 +0100
 @@ -15246,7 +15246,7 @@
  
  set signal
@@ -20,8 +20,8 @@ diff -ru perl-5.7.2.orig/Configure perl-5.7.2/Configure
  
  fi
 diff -ru perl-5.7.2.orig/ext/DB_File/DB_File.xs perl-5.7.2/ext/DB_File/DB_File.xs
---- perl-5.7.2.orig/ext/DB_File/DB_File.xs	2008-09-19 02:30:46.000000000 +0100
-+++ perl-5.7.2/ext/DB_File/DB_File.xs	2008-09-19 02:30:46.000000000 +0100
+--- perl-5.7.2.orig/ext/DB_File/DB_File.xs	2008-09-19 16:53:43.000000000 +0100
++++ perl-5.7.2/ext/DB_File/DB_File.xs	2008-09-19 16:53:43.000000000 +0100
 @@ -201,6 +201,10 @@
  #    define AT_LEAST_DB_3_2
  #endif
@@ -48,8 +48,8 @@ diff -ru perl-5.7.2.orig/ext/DB_File/DB_File.xs perl-5.7.2/ext/DB_File/DB_File.x
  
          if (status == 0)
 diff -ru perl-5.7.2.orig/ext/DB_File/t/db-recno.t perl-5.7.2/ext/DB_File/t/db-recno.t
---- perl-5.7.2.orig/ext/DB_File/t/db-recno.t	2008-09-19 02:30:46.000000000 +0100
-+++ perl-5.7.2/ext/DB_File/t/db-recno.t	2008-09-19 02:30:46.000000000 +0100
+--- perl-5.7.2.orig/ext/DB_File/t/db-recno.t	2008-09-19 16:53:43.000000000 +0100
++++ perl-5.7.2/ext/DB_File/t/db-recno.t	2008-09-19 16:53:43.000000000 +0100
 @@ -1,5 +1,11 @@
  #!./perl -w
  
@@ -63,8 +63,8 @@ diff -ru perl-5.7.2.orig/ext/DB_File/t/db-recno.t perl-5.7.2/ext/DB_File/t/db-re
      @INC = '../lib';
      require Config; import Config;
 diff -ru perl-5.7.2.orig/lib/Benchmark.t perl-5.7.2/lib/Benchmark.t
---- perl-5.7.2.orig/lib/Benchmark.t	2008-09-19 02:30:46.000000000 +0100
-+++ perl-5.7.2/lib/Benchmark.t	2008-09-19 02:30:46.000000000 +0100
+--- perl-5.7.2.orig/lib/Benchmark.t	2008-09-19 16:53:42.000000000 +0100
++++ perl-5.7.2/lib/Benchmark.t	2008-09-19 16:53:43.000000000 +0100
 @@ -1,5 +1,8 @@
  #!perl
  
@@ -75,8 +75,8 @@ diff -ru perl-5.7.2.orig/lib/Benchmark.t perl-5.7.2/lib/Benchmark.t
      chdir( 't' ) if -d 't';
      @INC = '../lib';
 diff -ru perl-5.7.2.orig/lib/File/Find/find.t perl-5.7.2/lib/File/Find/find.t
---- perl-5.7.2.orig/lib/File/Find/find.t	2008-09-19 02:30:46.000000000 +0100
-+++ perl-5.7.2/lib/File/Find/find.t	2008-09-19 02:30:46.000000000 +0100
+--- perl-5.7.2.orig/lib/File/Find/find.t	2008-09-19 16:53:42.000000000 +0100
++++ perl-5.7.2/lib/File/Find/find.t	2008-09-19 16:53:43.000000000 +0100
 @@ -1,5 +1,7 @@
  #!./perl
  
@@ -86,8 +86,8 @@ diff -ru perl-5.7.2.orig/lib/File/Find/find.t perl-5.7.2/lib/File/Find/find.t
  my %Expect_File = (); # what we expect for $_ 
  my %Expect_Name = (); # what we expect for $File::Find::name/fullname
 diff -ru perl-5.7.2.orig/lib/File/Find/taint.t perl-5.7.2/lib/File/Find/taint.t
---- perl-5.7.2.orig/lib/File/Find/taint.t	2008-09-19 02:30:46.000000000 +0100
-+++ perl-5.7.2/lib/File/Find/taint.t	2008-09-19 02:30:46.000000000 +0100
+--- perl-5.7.2.orig/lib/File/Find/taint.t	2008-09-19 16:53:42.000000000 +0100
++++ perl-5.7.2/lib/File/Find/taint.t	2008-09-19 16:53:43.000000000 +0100
 @@ -1,5 +1,7 @@
  #!./perl -T
  
@@ -96,3 +96,29 @@ diff -ru perl-5.7.2.orig/lib/File/Find/taint.t perl-5.7.2/lib/File/Find/taint.t
  
  my %Expect_File = (); # what we expect for $_ 
  my %Expect_Name = (); # what we expect for $File::Find::name/fullname
+diff -ru perl-5.7.2.orig/makedepend.SH perl-5.7.2/makedepend.SH
+--- perl-5.7.2.orig/makedepend.SH	2008-09-19 16:53:43.000000000 +0100
++++ perl-5.7.2/makedepend.SH	2008-09-19 17:33:59.000000000 +0100
+@@ -125,7 +125,7 @@
+     *.y) filebase=`basename $file .y` ;;
+     esac
+     case "$file" in
+-    */*) finc="-I`echo $file | sed 's#/[^/]*$##`" ;;
++    */*) finc="-I`echo $file | sed 's#/[^/]*$##'`" ;;
+     *)   finc= ;;
+     esac
+     $echo "Finding dependencies for $filebase$_o."
+@@ -159,7 +159,13 @@
+         $sed \
+ 	    -e '1d' \
+ 	    -e '/^#.*<stdin>/d' \
++            -e '/^#.*<builtin>/d' \
++            -e '/^#.*<built-in>/d' \
++            -e '/^#.*<command line>/d' \
++            -e '/^#.*<command-line>/d' \
+ 	    -e '/^#.*"-"/d' \
++	    -e '/^#.*"\/.*\/"/d' \
++	    -e '/: file path prefix .* never used$/d' \
+ 	    -e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
+ 	    -e 's/^[	 ]*#[	 ]*line/#/' \
+ 	    -e '/^# *[0-9][0-9]* *[".\/]/!d' \

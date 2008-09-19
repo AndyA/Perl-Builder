@@ -1,6 +1,6 @@
 diff -ru perl-5.7.1.orig/Configure perl-5.7.1/Configure
---- perl-5.7.1.orig/Configure	2008-09-19 02:34:33.000000000 +0100
-+++ perl-5.7.1/Configure	2008-09-19 02:34:33.000000000 +0100
+--- perl-5.7.1.orig/Configure	2008-09-19 16:57:25.000000000 +0100
++++ perl-5.7.1/Configure	2008-09-19 16:57:25.000000000 +0100
 @@ -14713,7 +14713,7 @@
  
  set signal
@@ -20,8 +20,8 @@ diff -ru perl-5.7.1.orig/Configure perl-5.7.1/Configure
  
  fi
 diff -ru perl-5.7.1.orig/ext/DB_File/DB_File.xs perl-5.7.1/ext/DB_File/DB_File.xs
---- perl-5.7.1.orig/ext/DB_File/DB_File.xs	2008-09-19 02:34:33.000000000 +0100
-+++ perl-5.7.1/ext/DB_File/DB_File.xs	2008-09-19 02:34:33.000000000 +0100
+--- perl-5.7.1.orig/ext/DB_File/DB_File.xs	2008-09-19 16:57:25.000000000 +0100
++++ perl-5.7.1/ext/DB_File/DB_File.xs	2008-09-19 16:57:25.000000000 +0100
 @@ -174,6 +174,10 @@
  #    define AT_LEAST_DB_3_2
  #endif
@@ -48,8 +48,8 @@ diff -ru perl-5.7.1.orig/ext/DB_File/DB_File.xs perl-5.7.1/ext/DB_File/DB_File.x
  
          if (status == 0)
 diff -ru perl-5.7.1.orig/makedepend.SH perl-5.7.1/makedepend.SH
---- perl-5.7.1.orig/makedepend.SH	2008-09-19 02:34:33.000000000 +0100
-+++ perl-5.7.1/makedepend.SH	2008-09-19 02:34:33.000000000 +0100
+--- perl-5.7.1.orig/makedepend.SH	2008-09-19 16:57:25.000000000 +0100
++++ perl-5.7.1/makedepend.SH	2008-09-19 17:35:25.000000000 +0100
 @@ -121,7 +121,7 @@
      *.y) filebase=`basename $file .y` ;;
      esac
@@ -59,9 +59,23 @@ diff -ru perl-5.7.1.orig/makedepend.SH perl-5.7.1/makedepend.SH
      *)   finc= ;;
      esac
      $echo "Finding dependencies for $filebase$_o."
+@@ -155,7 +155,13 @@
+         $sed \
+ 	    -e '1d' \
+ 	    -e '/^#.*<stdin>/d' \
++            -e '/^#.*<builtin>/d' \
++            -e '/^#.*<built-in>/d' \
++            -e '/^#.*<command line>/d' \
++            -e '/^#.*<command-line>/d' \
+ 	    -e '/^#.*"-"/d' \
++	    -e '/^#.*"\/.*\/"/d' \
++	    -e '/: file path prefix .* never used$/d' \
+ 	    -e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
+ 	    -e 's/^[	 ]*#[	 ]*line/#/' \
+ 	    -e '/^# *[0-9][0-9]* *[".\/]/!d' \
 diff -ru perl-5.7.1.orig/t/lib/db-recno.t perl-5.7.1/t/lib/db-recno.t
---- perl-5.7.1.orig/t/lib/db-recno.t	2008-09-19 02:34:33.000000000 +0100
-+++ perl-5.7.1/t/lib/db-recno.t	2008-09-19 02:34:33.000000000 +0100
+--- perl-5.7.1.orig/t/lib/db-recno.t	2008-09-19 16:57:25.000000000 +0100
++++ perl-5.7.1/t/lib/db-recno.t	2008-09-19 16:57:25.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -w
  
