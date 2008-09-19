@@ -57,7 +57,7 @@ for my $ver ( reverse @$versions ) {
   my $build_cmd
    = join ' && ',
    "cd $BUILD",
-   "rm -rf $dir",
+   "rm -rf $dir $dir.orig",
    "tar zxf $dst",
    "cp -r $dir $dir.orig",
    "cd $dir",
