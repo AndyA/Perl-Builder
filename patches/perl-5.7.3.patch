@@ -1,6 +1,6 @@
-diff -ru perl-5.7.3.orig/ext/DB_File/DB_File.xs perl-5.7.3/ext/DB_File/DB_File.xs
---- perl-5.7.3.orig/ext/DB_File/DB_File.xs	2008-09-17 23:12:49.000000000 +0100
-+++ perl-5.7.3/ext/DB_File/DB_File.xs	2008-09-18 02:48:06.000000000 +0100
+diff -ur perl-5.7.3.orig/ext/DB_File/DB_File.xs perl-5.7.3/ext/DB_File/DB_File.xs
+--- perl-5.7.3.orig/ext/DB_File/DB_File.xs	2008-09-19 01:54:47.000000000 +0100
++++ perl-5.7.3/ext/DB_File/DB_File.xs	2008-09-19 01:54:49.000000000 +0100
 @@ -183,6 +183,10 @@
  #    define AT_LEAST_DB_3_2
  #endif
@@ -26,9 +26,9 @@ diff -ru perl-5.7.3.orig/ext/DB_File/DB_File.xs perl-5.7.3/ext/DB_File/DB_File.x
  	/* printf("open returned %d %s\n", status, db_strerror(status)) ; */
  
          if (status == 0)
-diff -ru perl-5.7.3.orig/ext/DB_File/t/db-recno.t perl-5.7.3/ext/DB_File/t/db-recno.t
---- perl-5.7.3.orig/ext/DB_File/t/db-recno.t	2008-09-17 23:12:49.000000000 +0100
-+++ perl-5.7.3/ext/DB_File/t/db-recno.t	2008-09-18 17:46:38.000000000 +0100
+diff -ur perl-5.7.3.orig/ext/DB_File/t/db-recno.t perl-5.7.3/ext/DB_File/t/db-recno.t
+--- perl-5.7.3.orig/ext/DB_File/t/db-recno.t	2008-09-19 01:54:47.000000000 +0100
++++ perl-5.7.3/ext/DB_File/t/db-recno.t	2008-09-19 01:54:49.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -w
  
@@ -38,9 +38,9 @@ diff -ru perl-5.7.3.orig/ext/DB_File/t/db-recno.t perl-5.7.3/ext/DB_File/t/db-re
  BEGIN {
      unless(grep /blib/, @INC) {
          chdir 't' if -d 't';
-diff -ru perl-5.7.3.orig/lib/Benchmark.t perl-5.7.3/lib/Benchmark.t
---- perl-5.7.3.orig/lib/Benchmark.t	2008-09-17 23:12:48.000000000 +0100
-+++ perl-5.7.3/lib/Benchmark.t	2008-09-18 17:51:23.000000000 +0100
+diff -ur perl-5.7.3.orig/lib/Benchmark.t perl-5.7.3/lib/Benchmark.t
+--- perl-5.7.3.orig/lib/Benchmark.t	2008-09-19 01:54:46.000000000 +0100
++++ perl-5.7.3/lib/Benchmark.t	2008-09-19 01:54:49.000000000 +0100
 @@ -8,7 +8,8 @@
  use warnings;
  use strict;
@@ -51,9 +51,9 @@ diff -ru perl-5.7.3.orig/lib/Benchmark.t perl-5.7.3/lib/Benchmark.t
  
  use Benchmark qw(:all);
  
-diff -ru perl-5.7.3.orig/lib/File/Find/t/find.t perl-5.7.3/lib/File/Find/t/find.t
---- perl-5.7.3.orig/lib/File/Find/t/find.t	2008-09-17 23:12:48.000000000 +0100
-+++ perl-5.7.3/lib/File/Find/t/find.t	2008-09-18 17:46:49.000000000 +0100
+diff -ur perl-5.7.3.orig/lib/File/Find/t/find.t perl-5.7.3/lib/File/Find/t/find.t
+--- perl-5.7.3.orig/lib/File/Find/t/find.t	2008-09-19 01:54:45.000000000 +0100
++++ perl-5.7.3/lib/File/Find/t/find.t	2008-09-19 01:54:49.000000000 +0100
 @@ -1,5 +1,7 @@
  #!./perl
  
@@ -62,9 +62,9 @@ diff -ru perl-5.7.3.orig/lib/File/Find/t/find.t perl-5.7.3/lib/File/Find/t/find.
  
  my %Expect_File = (); # what we expect for $_ 
  my %Expect_Name = (); # what we expect for $File::Find::name/fullname
-diff -ru perl-5.7.3.orig/lib/File/Find/t/taint.t perl-5.7.3/lib/File/Find/t/taint.t
---- perl-5.7.3.orig/lib/File/Find/t/taint.t	2008-09-17 23:12:48.000000000 +0100
-+++ perl-5.7.3/lib/File/Find/t/taint.t	2008-09-18 17:46:45.000000000 +0100
+diff -ur perl-5.7.3.orig/lib/File/Find/t/taint.t perl-5.7.3/lib/File/Find/t/taint.t
+--- perl-5.7.3.orig/lib/File/Find/t/taint.t	2008-09-19 01:54:45.000000000 +0100
++++ perl-5.7.3/lib/File/Find/t/taint.t	2008-09-19 01:54:49.000000000 +0100
 @@ -1,5 +1,7 @@
  #!./perl -T
  
@@ -73,10 +73,10 @@ diff -ru perl-5.7.3.orig/lib/File/Find/t/taint.t perl-5.7.3/lib/File/Find/t/tain
  
  my %Expect_File = (); # what we expect for $_
  my %Expect_Name = (); # what we expect for $File::Find::name/fullname
-diff -ru perl-5.7.3.orig/makedepend.SH perl-5.7.3/makedepend.SH
---- perl-5.7.3.orig/makedepend.SH	2008-09-17 23:12:48.000000000 +0100
-+++ perl-5.7.3/makedepend.SH	2008-09-18 02:38:29.000000000 +0100
-@@ -116,7 +123,7 @@
+diff -ur perl-5.7.3.orig/makedepend.SH perl-5.7.3/makedepend.SH
+--- perl-5.7.3.orig/makedepend.SH	2008-09-19 01:54:48.000000000 +0100
++++ perl-5.7.3/makedepend.SH	2008-09-19 02:35:56.000000000 +0100
+@@ -116,7 +116,7 @@
      *.y) filebase=`basename $file .y` ;;
      esac
      case "$file" in
@@ -85,26 +85,33 @@ diff -ru perl-5.7.3.orig/makedepend.SH perl-5.7.3/makedepend.SH
      *)   finc= ;;
      esac
      $echo "Finding dependencies for $filebase$_o."
-@@ -143,13 +150,16 @@
- 	    -e 's|\.c\.c|.c|' $uwinfix | \
-         $uniq | $sort | $uniq >> .deptmp
-     else
-         $cppstdin $finc -I. $cppflags $cppminus <UU/$file.c 2>&1 |
+@@ -147,9 +147,12 @@
          $sed \
  	    -e '1d' \
  	    -e '/^#.*<stdin>/d' \
-             -e '/^#.*<builtin>/d' \
-+            -e '/^#.*<built-in>/d' \
-             -e '/^#.*<command line>/d' \
+-            -e '/^#.*<builtin>/d' \
+-            -e '/^#.*<command line>/d' \
++	    -e '/^#.*<builtin>/d' \
++	    -e '/^#.*<built-in>/d' \
++	    -e '/^#.*<command line>/d' \
 +            -e '/^#.*<command-line>/d' \
  	    -e '/^#.*"-"/d' \
 +	    -e '/^#.*"\/.*\/"/d' \
  	    -e '/: file path prefix .* never used$/d' \
  	    -e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
  	    -e 's/^[	 ]*#[	 ]*line/#/' \
-diff -ru perl-5.7.3.orig/patchlevel.h perl-5.7.3/patchlevel.h
---- perl-5.7.3.orig/patchlevel.h	2008-09-17 23:12:48.000000000 +0100
-+++ perl-5.7.3/patchlevel.h	2008-09-18 18:11:05.000000000 +0100
+@@ -157,7 +160,7 @@
+ 	    -e 's/^.*"\(.*\)".*$/'$filebase'\$(OBJ_EXT): \1/' \
+ 	    -e 's/^# *[0-9][0-9]* \(.*\)$/'$filebase'\$(OBJ_EXT): \1/' \
+ 	    -e 's|: \./|: |' \
+-	    -e 's|\.c\.c|.c|' $uwinfix | \
++           -e 's|\.c\.c|.c|' $uwinfix | \
+         $uniq | $sort | $uniq >> .deptmp
+     fi
+ done
+diff -ur perl-5.7.3.orig/patchlevel.h perl-5.7.3/patchlevel.h
+--- perl-5.7.3.orig/patchlevel.h	2008-09-19 01:54:48.000000000 +0100
++++ perl-5.7.3/patchlevel.h	2008-09-19 01:54:49.000000000 +0100
 @@ -79,6 +79,7 @@
  #if !defined(PERL_PATCHLEVEL_H_IMPLICIT) && !defined(LOCAL_PATCH_COUNT)
  static	char	*local_patches[] = {
