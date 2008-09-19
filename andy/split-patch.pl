@@ -9,32 +9,31 @@ while ( my $patch = shift ) {
 
 sub split_patch {
   my $patch = shift;
-  ( my $test_patch = $patch ) =~ s{(^|/)perl}{$1test}
-   or die "Can't make $patch into a test patch name\n";
-  my $name_map = { test => $test_patch, non_test => $patch };
-
-  my $stash = { test => [], non_test => [], spill => [] };
-  my $sel = undef;
+  my $S     = ' spill bucket ';
+  my $stash = {};
+  my $sel   = undef;
   open my $ip, '<', $patch or die "Can't read $patch ($!)\n";
   while ( defined( my $line = <$ip> ) ) {
     if ( $line =~ /^diff/ ) {
-      $sel = 'spill';
+      $sel = $S;
     }
     elsif ( $line =~ /^---\s+(\S+)/ ) {
-      my $file = $1;
-      $sel = ( $file =~ /\.t$/ ? 'test' : 'non_test' );
-      push @{ $stash->{$sel} }, splice @{ $stash->{spill} };
+      ( $sel = $1 ) =~ s/\W+/_/g;
+      $sel =~ s/^_//;
+      $sel =~ s/_$//;
+      $sel .= '.patch';
+      push @{ $stash->{$sel} }, splice @{ $stash->{$S} };
     }
     die "Huh?" unless defined $sel;
     push @{ $stash->{$sel} }, $line;
   }
 
-  for my $type ( keys %$name_map ) {
-    if ( @{ $stash->{$type} } ) {
-      my $new_patch = $name_map->{$type};
-      open my $op, '>', $new_patch
-       or die "Can't write $new_patch ($!)\n";
-      print $op join '', @{ $stash->{$type} };
+  for my $name ( keys %$stash ) {
+    next if $name eq $S;
+    if ( @{ $stash->{$name} } ) {
+      open my $op, '>', $name
+       or die "Can't write $name ($!)\n";
+      print $op join '', @{ $stash->{$name} };
     }
   }
 }
