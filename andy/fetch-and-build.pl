@@ -18,6 +18,7 @@ my $like_version = Perl::Version::REGEX;
 mkpath( $BUILD );
 my $versions = LoadFile( 'versions.yaml' );
 
+my @failed = ();
 my $ua = LWP::UserAgent->new;
 for my $ver ( reverse @$versions ) {
   my $src = $CPAN . $ver->{source};
@@ -63,8 +64,12 @@ for my $ver ( reverse @$versions ) {
    "chmod -R u+w .",
    @prepare, @build;
   print "$build_cmd\n";
-  system $build_cmd;
+  system $build_cmd and push @failed, $ver;
+}
 
+if ( @failed ) {
+  print "The following versions had build problems:\n";
+  print "  $_" for sort @failed;
 }
 
 # vim:ts=2:sw=2:sts=2:et:ft=perl
