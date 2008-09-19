@@ -1,0 +1,456 @@
+diff -ru perl5.004_01.orig/config_h.SH perl5.004_01/config_h.SH
+--- perl5.004_01.orig/config_h.SH	2008-09-19 02:45:11.000000000 +0100
++++ perl5.004_01/config_h.SH	2008-09-19 13:52:28.000000000 +0100
+@@ -617,6 +617,30 @@
+  */
+ #$d_sem HAS_SEM		/**/
+ 
++/* HAS_UNION_SEMUN:
++ *	This symbol, if defined, indicates that the union semun
++ *	is defined in <sys/sem.h>.  If not, the user code probably
++ *      needs to define it as:
++ * union semun {
++ *    int val;
++ *    struct semid_ds *buf;
++ *    unsigned short *array;
++ * }
++ */
++#$d_union_semun HAS_UNION_SEMUN		/**/
++
++/* USE_SEMCTL_SEMUN:
++ *	This symbol, if defined, indicates that union semun is
++ *	used for semctl IPC_STAT.
++ */
++#$d_semctl_semun USE_SEMCTL_SEMUN	/**/
++
++/* USE_SEMCTL_SEMID_DS:
++ *	This symbol, if defined, indicates that struct semid_ds * is
++ *	used for semctl IPC_STAT.
++ */
++#$d_semctl_semid_ds USE_SEMCTL_SEMID_DS	/**/
++
+ /* HAS_SETEGID:
+  *	This symbol, if defined, indicates that the setegid routine is available
+  *	to change the effective gid of the current program.
+diff -ru perl5.004_01.orig/Configure perl5.004_01/Configure
+--- perl5.004_01.orig/Configure	2008-09-19 02:45:11.000000000 +0100
++++ perl5.004_01/Configure	2008-09-19 13:52:28.000000000 +0100
+@@ -215,6 +215,7 @@
+ zip=''
+ full_sed=''
+ libswanted=''
++ignore_versioned_solibs=''
+ hint=''
+ myuname=''
+ osname=''
+@@ -371,6 +372,9 @@
+ d_semctl=''
+ d_semget=''
+ d_semop=''
++d_union_semun=''
++d_semctl_semun=''
++d_semctl_semid_ds=''
+ d_setegid=''
+ d_seteuid=''
+ d_setlinebuf=''
+@@ -538,6 +542,7 @@
+ loclibpth=''
+ plibpth=''
+ xlibpth=''
++ignore_versioned_solibs=''
+ libs=''
+ lns=''
+ lseektype=''
+@@ -3361,7 +3366,8 @@
+ esac
+ for thislib in $libswanted; do
+ 	
+-	if xxx=`./loc lib$thislib.$so.[0-9]'*' X $libpth`; $test -f "$xxx"; then
++	if xxx=`./loc lib$thislib.$so.[0-9]'*' X $libpth`;
++		$test -f "$xxx" -a "X$ignore_versioned_solibs" = "X"; then
+ 		echo "Found -l$thislib (shared)."
+ 		case " $dflt " in
+ 		*"-l$thislib "*);;
+@@ -7335,6 +7341,162 @@
+ set d_sem
+ eval $setvar
+ 
++: see how to do semctl IPC_STAT
++case "$h_sem$d_sem$d_semctl" in
++true$define$define)
++    : see whether sys/sem.h defines union semun
++    $cat > try.c <<'END'
++#include <sys/types.h>
++#include <sys/ipc.h>
++#include <sys/sem.h>
++int main () { union semun semun; semun.buf = 0; }
++END
++    if $cc $ccflags -o try try.c > /dev/null 2>&1; then
++	echo "You have union semun in <sys/sem.h>." >&4
++	val="$define"
++    else
++	 echo "You do not have union semun in <sys/sem.h>." >&4
++	 val="$undef"
++    fi
++    $rm -f try try.c
++    set d_union_semun
++    eval $setvar
++
++    : see whether semctl IPC_STAT can use union semun
++    $cat > try.c <<END
++#include <sys/types.h>
++#include <sys/ipc.h>
++#include <sys/sem.h>
++#include <sys/stat.h>
++#include <stdio.h>
++#include <errno.h>
++#ifndef errno
++extern int errno;
++#endif
++#$d_union_semun HAS_UNION_SEMUN
++int main() {
++  union semun
++#ifndef HAS_UNION_SEMUN
++  {
++    int val;
++    struct semid_ds *buf;
++    unsigned short *array;
++  }
++#endif
++    arg;
++  int sem, st;
++
++#if defined(IPC_PRIVATE) && defined(S_IRWXU) && defined(S_IRWXG) && \
++    defined(S_IRWXO) && defined(IPC_CREAT)
++  sem = semget(IPC_PRIVATE, 1, S_IRWXU|S_IRWXG|S_IRWXO|IPC_CREAT);
++  if (sem > -1) {
++    struct semid_ds argbuf;
++    arg.buf = &argbuf;
++#   ifdef IPC_STAT
++    st = semctl(sem, 0, IPC_STAT, arg);
++    if (st == 0)
++      printf("semun\n");
++    else
++#   endif /* IPC_STAT */
++      printf("semctl IPC_STAT failed: errno = %d\n", errno);
++#   ifdef IPC_RMID
++    if (semctl(sem, 0, IPC_RMID, arg) != 0)
++#   endif /* IPC_RMID */
++      printf("semctl IPC_RMID failed: errno = %d\n", errno);
++  } else
++#endif /* IPC_PRIVATE && ... */
++    printf("semget failed: errno = %d\n", errno);
++
++  return 0;
++}
++END
++    val="$undef"
++    if $cc $ccflags -o try try.c > /dev/null 2>&1; then
++        d_semctl_semun=`./try`
++        case "$d_semctl_semun" in
++        semun) val="$define" ;;
++        esac
++    fi
++    $rm -f try try.c
++    set d_semctl_semun
++    eval $setvar
++    case "$d_semctl_semun" in
++    $define|true)
++        echo "You can use union semun for semctl IPC_STAT." >&4
++        ;;
++    *)  echo "You cannot use union semun for semctl IPC_STAT." >&4
++        ;;
++    esac
++
++    : see whether semctl IPC_STAT can use struct semid_ds pointer
++
++    $cat > try.c <<'END'
++#include <sys/types.h>
++#include <sys/ipc.h>
++#include <sys/sem.h>
++#include <sys/stat.h>
++#include <stdio.h>
++#include <errno.h>
++#ifndef errno
++extern int errno;
++#endif
++int main() {
++  struct semid_ds arg;
++  int sem, st;
++
++#if defined(IPC_PRIVATE) && defined(S_IRWXU) && defined(S_IRWXG) && \
++    defined(S_IRWXO) && defined(IPC_CREAT)
++  sem = semget(IPC_PRIVATE, 1, S_IRWXU|S_IRWXG|S_IRWXO|IPC_CREAT);
++  if (sem > -1) {
++#   ifdef IPC_STAT
++    st = semctl(sem, 0, IPC_STAT, &arg);
++    if (st == 0)
++      printf("semid_ds\n");
++    else
++#   endif /* IPC_STAT */
++      printf("semctl IPC_STAT failed: errno = %d\n", errno);
++#   ifdef IPC_RMID
++    if (semctl(sem, 0, IPC_RMID, &arg) != 0)
++#   endif /* IPC_RMID */
++      printf("semctl IPC_RMID failed: errno = %d\n", errno);
++  } else
++#endif /* IPC_PRIVATE && ... */
++      printf("semget failed: errno = %d\n", errno);
++
++  return 0;
++}
++END
++    val="$undef"
++    if $cc $ccflags -o try try.c > /dev/null 2>&1; then
++        d_semctl_semid_ds=`./try`
++        case "$d_semctl_semid_ds" in
++        semid_ds) val="$define" ;;
++        esac
++    fi
++    $rm -f try try.c
++    set d_semctl_semid_ds
++    eval $setvar
++    case "$d_semctl_semid_ds" in
++    $define|true)
++        echo "You can use struct semid_ds * for semctl IPC_STAT." >&4
++        ;;
++    *)  echo "You cannot use struct semid_ds * for semctl IPC_STAT." >&4
++        ;;
++    esac
++    ;;
++*)  val="$undef"
++
++    set d_union_semun
++    eval $setvar
++
++    set d_semctl_semun
++    eval $setvar
++
++    set d_semctl_semid_ds
++    eval $setvar
++    ;;
++esac
++
+ : see if setegid exists
+ set setegid d_setegid
+ eval $inlibc
+@@ -9103,7 +9265,7 @@
+ $startsh
+ $test -s signal.lst && exit 0
+ if $cc $ccflags $ldflags signal.c -o signal >/dev/null 2>&1; then
+-	./signal | $sort -n +1 | $uniq | $awk -f signal.awk >signal.lst
++  	./signal | ($sort -n -k 2 2>/dev/null || $sort -n +1) | $uniq | $awk -f signal.awk >signal.lst
+ else
+ 	echo "(I can't seem be able to compile the test program -- Guessing)"
+ 	echo 'kill -l' >signal
+@@ -10141,6 +10303,9 @@
+ d_semctl='$d_semctl'
+ d_semget='$d_semget'
+ d_semop='$d_semop'
++d_union_semun='$d_union_semun'
++d_semctl_semun='$d_semctl_semun'
++d_semctl_semid_ds='$d_semctl_semid_ds'
+ d_setegid='$d_setegid'
+ d_seteuid='$d_seteuid'
+ d_setlinebuf='$d_setlinebuf'
+@@ -10296,6 +10461,7 @@
+ i_varargs='$i_varargs'
+ i_varhdr='$i_varhdr'
+ i_vfork='$i_vfork'
++ignore_versioned_solibs='$ignore_versioned_solibs'
+ incpath='$incpath'
+ inews='$inews'
+ installarchlib='$installarchlib'
+diff -ru perl5.004_01.orig/doio.c perl5.004_01/doio.c
+--- perl5.004_01.orig/doio.c	2008-09-19 02:45:11.000000000 +0100
++++ perl5.004_01/doio.c	2008-09-19 13:54:24.000000000 +0100
+@@ -1333,9 +1333,6 @@
+     char *a;
+     I32 id, n, cmd, infosize, getinfo;
+     I32 ret = -1;
+-#ifdef __linux__	/* XXX Need metaconfig test */
+-    union semun unsemds;
+-#endif
+ 
+     id = SvIVx(*++mark);
+     n = (optype == OP_SEMCTL) ? SvIVx(*++mark) : 0;
+@@ -1364,31 +1361,14 @@
+ 	    infosize = sizeof(struct semid_ds);
+ 	else if (cmd == GETALL || cmd == SETALL)
+ 	{
+-#ifdef __linux__	/* XXX Need metaconfig test */
+-/* linux uses :
+-   int semctl (int semid, int semnun, int cmd, union semun arg)
+-
+-       union semun {
+-            int val;
+-            struct semid_ds *buf;
+-            ushort *array;
+-       };
+-*/
+-            union semun semds;
+-	    if (semctl(id, 0, IPC_STAT, semds) == -1)
+-#else
+ 	    struct semid_ds semds;
+-	    if (semctl(id, 0, IPC_STAT, &semds) == -1)
+-#endif
++	    union semun semun;
++
++            semun.buf = &semds;
++	    if (Semctl(id, 0, IPC_STAT, semun) == -1)
+ 		return -1;
+ 	    getinfo = (cmd == GETALL);
+-#ifdef __linux__	/* XXX Need metaconfig test */
+-	    infosize = semds.buf->sem_nsems * sizeof(short);
+-#else
+-	    infosize = semds.sem_nsems * sizeof(short);
+-#endif
+-		/* "short" is technically wrong but much more portable
+-		   than guessing about u_?short(_t)? */
++	    infosize = semds.sem_nsems * sizeof(unsigned short);
+ 	}
+ 	break;
+ #endif
+@@ -1428,13 +1408,12 @@
+ 	break;
+ #endif
+ #ifdef HAS_SEM
+-    case OP_SEMCTL:
+-#ifdef __linux__	/* XXX Need metaconfig test */
+-        unsemds.buf = (struct semid_ds *)a;
+-	ret = semctl(id, n, cmd, unsemds);
+-#else
+-	ret = semctl(id, n, cmd, (struct semid_ds *)a);
+-#endif
++    case OP_SEMCTL: {
++            union semun unsemds;
++
++            unsemds.buf = (struct semid_ds *)a;
++	    ret = Semctl(id, n, cmd, unsemds);
++        }
+ 	break;
+ #endif
+ #ifdef HAS_SHM
+@@ -1451,6 +1430,7 @@
+     return ret;
+ }
+ 
++
+ I32
+ do_msgsnd(mark, sp)
+ SV **mark;
+diff -ru perl5.004_01.orig/hints/linux.sh perl5.004_01/hints/linux.sh
+--- perl5.004_01.orig/hints/linux.sh	2008-09-19 02:45:11.000000000 +0100
++++ perl5.004_01/hints/linux.sh	2008-09-19 13:52:28.000000000 +0100
+@@ -18,6 +18,27 @@
+ # No version of Linux supports setuid scripts.
+ d_suidsafe='undef'
+ 
++# Debian and Red Hat, and perhaps other vendors, provide both runtime and
++# development packages for some libraries.  The runtime packages contain shared
++# libraries with version information in their names (e.g., libgdbm.so.1.7.3);
++# the development packages supplement this with versionless shared libraries
++# (e.g., libgdbm.so).
++#
++# If you want to link against such a library, you must install the development
++# version of the package.
++#
++# These packages use a -dev naming convention in both Debian and Red Hat:
++#   libgdbmg1  (non-development version of GNU libc 2-linked GDBM library)
++#   libgdbmg1-dev (development version of GNU libc 2-linked GDBM library)
++# So make sure that for any libraries you wish to link Perl with under
++# Debian or Red Hat you have the -dev packages installed.
++#
++# Some operating systems (e.g., Solaris 2.6) will link to a versioned shared
++# library implicitly.  For example, on Solaris, `ld foo.o -lgdbm' will find an
++# appropriate version of libgdbm, if one is available; Linux, however, doesn't
++# do the implicit mapping.
++ignore_versioned_solibs='y'
++
+ # perl goes into the /usr tree.  See the Filesystem Standard
+ # available via anonymous FTP at tsx-11.mit.edu in
+ # /pub/linux/docs/linux-standards/fsstnd.
+diff -ru perl5.004_01.orig/makedepend.SH perl5.004_01/makedepend.SH
+--- perl5.004_01.orig/makedepend.SH	2008-09-19 02:45:11.000000000 +0100
++++ perl5.004_01/makedepend.SH	2008-09-19 13:52:28.000000000 +0100
+@@ -96,7 +96,7 @@
+     *.y) filebase=`basename $file .y` ;;
+     esac
+     case "$file" in
+-    */*) finc="-I`echo $file | sed 's#/[^/]*$##`" ;;
++    */*) finc="-I`echo $file | sed 's#/[^/]*$##'`" ;;
+     *)   finc= ;;
+     esac
+     $echo "Finding dependencies for $filebase$obj_ext."
+@@ -111,13 +111,21 @@
+ 	-e '}' ) >UU/$file.c
+     $cppstdin $finc -I/usr/local/include -I. $cppflags $cppminus <UU/$file.c |
+     $sed \
+-	-e '/^#.*<stdin>/d' \
+-	-e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
+-	-e 's/^[	 ]*#[	 ]*line/#/' \
+-	-e '/^# *[0-9][0-9]* *[".\/]/!d' \
+-	-e 's/^.*"\(.*\)".*$/'$filebase'\$(OBJ_EXT): \1/' \
+-	-e 's/^# *[0-9][0-9]* \(.*\)$/'$filebase'\$(OBJ_EXT): \1/' \
+-	-e 's|: \./|: |' \
++        -e '1d' \
++        -e '/^#.*<stdin>/d' \
++        -e '/^#.*<builtin>/d' \
++        -e '/^#.*<built-in>/d' \
++        -e '/^#.*<command line>/d' \
++        -e '/^#.*<command-line>/d' \
++        -e '/^#.*"-"/d' \
++        -e '/^#.*"\/.*\/"/d' \
++        -e '/: file path prefix .* never used$/d' \
++        -e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
++        -e 's/^[	 ]*#[	 ]*line/#/' \
++        -e '/^# *[0-9][0-9]* *[".\/]/!d' \
++        -e 's/^.*"\(.*\)".*$/'$filebase'\$(OBJ_EXT): \1/' \
++        -e 's/^# *[0-9][0-9]* \(.*\)$/'$filebase'\$(OBJ_EXT): \1/' \
++        -e 's|: \./|: |' \
+ 	-e 's|\.c\.c|.c|' | \
+     $uniq | $sort | $uniq >> .deptmp
+ done
+diff -ru perl5.004_01.orig/perl.h perl5.004_01/perl.h
+--- perl5.004_01.orig/perl.h	2008-09-19 02:45:11.000000000 +0100
++++ perl5.004_01/perl.h	2008-09-19 13:52:28.000000000 +0100
+@@ -2200,5 +2200,39 @@
+ #define printf PerlIO_stdoutf
+ #endif
+ 
++#ifndef PERL_SCRIPT_MODE
++#define PERL_SCRIPT_MODE "r"
++#endif
++
++/* provide some backwards compatibility for XS source from 5.005 */
++#define djSP dSP
++#define AvFILLp(a) AvFILL(a)
++#define dTHR typedef int _thr_dummy
++#define ERRSV GvSV(errgv)
++#define ERRHV GvHV(errgv)
++#define DEFSV GvSV(defgv)
++#define SAVE_DEFSV SAVESPTR(GvSV(defgv))
++
++#ifdef HAS_SEM
++#   include <sys/ipc.h>
++#   include <sys/sem.h>
++#   ifndef HAS_UNION_SEMUN	/* Provide the union semun. */
++    union semun {
++	int val;
++	struct semid_ds *buf;
++	unsigned short *array;
++    };
++#   endif
++#   ifdef USE_SEMCTL_SEMUN
++#       define Semctl(id, num, cmd, semun) semctl(id, num, cmd, semun)
++#   else
++#       ifdef USE_SEMCTL_SEMID_DS
++#           define Semctl(id, num, cmd, semun) semctl(id, num, cmd, semun.buf)
++#       endif
++#   endif
++#   ifndef Semctl	/* Place our bets on the semun horse. */
++#       define Semctl(id, num, cmd, semun) semctl(id, num, cmd, semun)
++#   endif
++#endif
+ #endif /* Include guard */
+ 
