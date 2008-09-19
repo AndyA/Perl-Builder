@@ -23,13 +23,14 @@ for my $ver ( reverse @$versions ) {
   my $src = $CPAN . $ver->{source};
   my ( $dst ) = ( $src =~ m{/([^/]+)$} );
   my $ver = Perl::Version->new( join '', ( $dst =~ $like_version ) );
+  my $inst = File::Spec->catdir( File::Spec->rel2abs( $INST ), "$ver" );
+  next if -d $inst;
   my $ball = File::Spec->catfile( $BUILD, $dst );
   unless ( -e $ball ) {
     print "$src --> $ball\n";
     my $res = $ua->get( $src, ':content_file' => $ball );
     warn $res->status_line, "\n" unless $res->is_success;
   }
-  my $inst = File::Spec->catdir( File::Spec->rel2abs( $INST ), "$ver" );
   print "$inst\n";
   my @cmd = ( './Configure', '-de', '-Dprefix=' . $inst );
   push @cmd, ( '-Dusedevel', '-Uversiononly' ) if $ver->version % 2;
@@ -39,7 +40,6 @@ for my $ver ( reverse @$versions ) {
   my @prepare = ();
   my $patch   = File::Spec->rel2abs(
     File::Spec->catfile( $PATCHES, "$dir.patch" ) );
-  #push @prepare, "patch --get=0 -t -p1 < $patch | tee stdout.patch 2>&1"
   push @prepare, "yes n | patch -t -p1 < $patch | tee stdout.patch 2>&1"
    if -f $patch;
   my $build_cmd
