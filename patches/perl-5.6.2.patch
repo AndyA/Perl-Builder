@@ -1,6 +1,6 @@
 diff -ur perl-5.6.2.orig/Configure perl-5.6.2/Configure
 --- perl-5.6.2.orig/Configure	2008-09-19 01:16:35.000000000 +0100
-+++ perl-5.6.2/Configure	2008-09-19 01:16:35.000000000 +0100
++++ perl-5.6.2/Configure	2008-09-19 01:43:23.000000000 +0100
 @@ -14249,7 +14249,7 @@
  
  set signal
@@ -21,7 +21,7 @@ diff -ur perl-5.6.2.orig/Configure perl-5.6.2/Configure
  fi
 diff -ur perl-5.6.2.orig/ext/DB_File/DB_File.xs perl-5.6.2/ext/DB_File/DB_File.xs
 --- perl-5.6.2.orig/ext/DB_File/DB_File.xs	2008-09-19 01:16:35.000000000 +0100
-+++ perl-5.6.2/ext/DB_File/DB_File.xs	2008-09-19 01:16:36.000000000 +0100
++++ perl-5.6.2/ext/DB_File/DB_File.xs	2008-09-19 01:43:25.000000000 +0100
 @@ -191,6 +191,10 @@
  #    define AT_LEAST_DB_4_1
  #endif
@@ -35,7 +35,7 @@ diff -ur perl-5.6.2.orig/ext/DB_File/DB_File.xs perl-5.6.2/ext/DB_File/DB_File.x
  #ifdef DB_Prefix_t
 diff -ur perl-5.6.2.orig/makedepend.SH perl-5.6.2/makedepend.SH
 --- perl-5.6.2.orig/makedepend.SH	2008-09-19 01:16:35.000000000 +0100
-+++ perl-5.6.2/makedepend.SH	2008-09-19 01:33:24.000000000 +0100
++++ perl-5.6.2/makedepend.SH	2008-09-19 01:43:26.000000000 +0100
 @@ -126,7 +126,7 @@
      *.y) filebase=`basename $file .y` ;;
      esac
@@ -45,16 +45,10 @@ diff -ur perl-5.6.2.orig/makedepend.SH perl-5.6.2/makedepend.SH
      *)   finc= ;;
      esac
      $echo "Finding dependencies for $filebase$_o."
-@@ -160,17 +160,20 @@
-         $sed \
- 	    -e '1d' \
- 	    -e '/^#.*<stdin>/d' \
--	    -e '/^#.*<builtin>/d' \
--	    -e '/^#.*<built-in>/d' \
--	    -e '/^#.*<command line>/d' \
-+            -e '/^#.*<builtin>/d' \
-+            -e '/^#.*<built-in>/d' \
-+            -e '/^#.*<command line>/d' \
+@@ -163,14 +163,17 @@
+ 	    -e '/^#.*<builtin>/d' \
+ 	    -e '/^#.*<built-in>/d' \
+ 	    -e '/^#.*<command line>/d' \
 +            -e '/^#.*<command-line>/d' \
  	    -e '/^#.*"-"/d' \
 +	    -e '/^#.*"\/.*\/"/d' \
@@ -72,7 +66,7 @@ diff -ur perl-5.6.2.orig/makedepend.SH perl-5.6.2/makedepend.SH
  done
 diff -ur perl-5.6.2.orig/t/lib/db-recno.t perl-5.6.2/t/lib/db-recno.t
 --- perl-5.6.2.orig/t/lib/db-recno.t	2008-09-19 01:16:35.000000000 +0100
-+++ perl-5.6.2/t/lib/db-recno.t	2008-09-19 01:16:36.000000000 +0100
++++ perl-5.6.2/t/lib/db-recno.t	2008-09-19 01:43:28.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -w
  
