@@ -1,6 +1,6 @@
 diff -ru perl-5.8.7.orig/ext/DB_File/t/db-recno.t perl-5.8.7/ext/DB_File/t/db-recno.t
---- perl-5.8.7.orig/ext/DB_File/t/db-recno.t	2008-09-17 21:55:52.000000000 +0100
-+++ perl-5.8.7/ext/DB_File/t/db-recno.t	2008-09-17 21:55:52.000000000 +0100
+--- perl-5.8.7.orig/ext/DB_File/t/db-recno.t	2008-09-19 02:26:29.000000000 +0100
++++ perl-5.8.7/ext/DB_File/t/db-recno.t	2008-09-19 02:26:30.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -w
  
@@ -11,8 +11,8 @@ diff -ru perl-5.8.7.orig/ext/DB_File/t/db-recno.t perl-5.8.7/ext/DB_File/t/db-re
      unless(grep /blib/, @INC) {
          chdir 't' if -d 't';
 diff -ru perl-5.8.7.orig/makedepend.SH perl-5.8.7/makedepend.SH
---- perl-5.8.7.orig/makedepend.SH	2008-09-17 21:55:51.000000000 +0100
-+++ perl-5.8.7/makedepend.SH	2008-09-17 21:55:52.000000000 +0100
+--- perl-5.8.7.orig/makedepend.SH	2008-09-19 02:26:29.000000000 +0100
++++ perl-5.8.7/makedepend.SH	2008-09-19 02:26:30.000000000 +0100
 @@ -128,7 +128,7 @@
      *.y) filebase=`basename $file .y` ;;
      esac
@@ -33,8 +33,8 @@ diff -ru perl-5.8.7.orig/makedepend.SH perl-5.8.7/makedepend.SH
  	    -e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
  	    -e 's/^[	 ]*#[	 ]*line/#/' \
 diff -ru perl-5.8.7.orig/patchlevel.h perl-5.8.7/patchlevel.h
---- perl-5.8.7.orig/patchlevel.h	2008-09-17 21:55:51.000000000 +0100
-+++ perl-5.8.7/patchlevel.h	2008-09-18 18:11:05.000000000 +0100
+--- perl-5.8.7.orig/patchlevel.h	2008-09-19 02:26:29.000000000 +0100
++++ perl-5.8.7/patchlevel.h	2008-09-19 02:26:30.000000000 +0100
 @@ -120,6 +120,7 @@
  #if !defined(PERL_PATCHLEVEL_H_IMPLICIT) && !defined(LOCAL_PATCH_COUNT)
  static	char	*local_patches[] = {

@@ -1,6 +1,6 @@
 diff -ru perl-5.7.0.orig/Configure perl-5.7.0/Configure
---- perl-5.7.0.orig/Configure	2008-09-17 23:20:09.000000000 +0100
-+++ perl-5.7.0/Configure	2008-09-18 21:53:11.000000000 +0100
+--- perl-5.7.0.orig/Configure	2008-09-19 02:35:50.000000000 +0100
++++ perl-5.7.0/Configure	2008-09-19 02:35:51.000000000 +0100
 @@ -14029,7 +14029,7 @@
  
  set signal
@@ -20,8 +20,8 @@ diff -ru perl-5.7.0.orig/Configure perl-5.7.0/Configure
  
  fi
 diff -ru perl-5.7.0.orig/ext/DB_File/DB_File.xs perl-5.7.0/ext/DB_File/DB_File.xs
---- perl-5.7.0.orig/ext/DB_File/DB_File.xs	2008-09-17 23:20:09.000000000 +0100
-+++ perl-5.7.0/ext/DB_File/DB_File.xs	2008-09-18 21:55:10.000000000 +0100
+--- perl-5.7.0.orig/ext/DB_File/DB_File.xs	2008-09-19 02:35:51.000000000 +0100
++++ perl-5.7.0/ext/DB_File/DB_File.xs	2008-09-19 02:35:51.000000000 +0100
 @@ -159,6 +159,10 @@
  #    define BERKELEY_DB_1_OR_2
  #endif
@@ -49,8 +49,8 @@ diff -ru perl-5.7.0.orig/ext/DB_File/DB_File.xs perl-5.7.0/ext/DB_File/DB_File.x
  
          if (status == 0)
 diff -ru perl-5.7.0.orig/makedepend.SH perl-5.7.0/makedepend.SH
---- perl-5.7.0.orig/makedepend.SH	2008-09-17 23:20:09.000000000 +0100
-+++ perl-5.7.0/makedepend.SH	2008-09-18 21:53:12.000000000 +0100
+--- perl-5.7.0.orig/makedepend.SH	2008-09-19 02:35:50.000000000 +0100
++++ perl-5.7.0/makedepend.SH	2008-09-19 02:35:51.000000000 +0100
 @@ -117,7 +117,7 @@
      *.y) filebase=`basename $file .y` ;;
      esac
@@ -60,30 +60,9 @@ diff -ru perl-5.7.0.orig/makedepend.SH perl-5.7.0/makedepend.SH
      *)   finc= ;;
      esac
      $echo "Finding dependencies for $filebase$_o."
-@@ -151,14 +151,20 @@
-         $sed \
- 	    -e '1d' \
- 	    -e '/^#.*<stdin>/d' \
-+            -e '/^#.*<builtin>/d' \
-+            -e '/^#.*<built-in>/d' \
-+            -e '/^#.*<command line>/d' \
-+            -e '/^#.*<command-line>/d' \
- 	    -e '/^#.*"-"/d' \
-+	    -e '/^#.*"\/.*\/"/d' \
-+	    -e '/: file path prefix .* never used$/d' \
- 	    -e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
- 	    -e 's/^[	 ]*#[	 ]*line/#/' \
- 	    -e '/^# *[0-9][0-9]* *[".\/]/!d' \
- 	    -e 's/^.*"\(.*\)".*$/'$filebase'\$(OBJ_EXT): \1/' \
- 	    -e 's/^# *[0-9][0-9]* \(.*\)$/'$filebase'\$(OBJ_EXT): \1/' \
- 	    -e 's|: \./|: |' \
- 	    -e 's|\.c\.c|.c|' $uwinfix | \
-         $uniq | $sort | $uniq >> .deptmp
-     fi
- done
 diff -ru perl-5.7.0.orig/t/lib/db-btree.t perl-5.7.0/t/lib/db-btree.t
---- perl-5.7.0.orig/t/lib/db-btree.t	2008-09-17 23:20:09.000000000 +0100
-+++ perl-5.7.0/t/lib/db-btree.t	2008-09-18 22:02:46.000000000 +0100
+--- perl-5.7.0.orig/t/lib/db-btree.t	2008-09-19 02:35:50.000000000 +0100
++++ perl-5.7.0/t/lib/db-btree.t	2008-09-19 02:35:51.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -w
  
@@ -94,8 +73,8 @@ diff -ru perl-5.7.0.orig/t/lib/db-btree.t perl-5.7.0/t/lib/db-btree.t
      @INC = '../lib';
      require Config; import Config;
 diff -ru perl-5.7.0.orig/t/lib/db-hash.t perl-5.7.0/t/lib/db-hash.t
---- perl-5.7.0.orig/t/lib/db-hash.t	2008-09-17 23:20:09.000000000 +0100
-+++ perl-5.7.0/t/lib/db-hash.t	2008-09-18 22:03:02.000000000 +0100
+--- perl-5.7.0.orig/t/lib/db-hash.t	2008-09-19 02:35:50.000000000 +0100
++++ perl-5.7.0/t/lib/db-hash.t	2008-09-19 02:35:51.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -w
  
@@ -106,8 +85,8 @@ diff -ru perl-5.7.0.orig/t/lib/db-hash.t perl-5.7.0/t/lib/db-hash.t
      @INC = '../lib';
      require Config; import Config;
 diff -ru perl-5.7.0.orig/t/lib/db-recno.t perl-5.7.0/t/lib/db-recno.t
---- perl-5.7.0.orig/t/lib/db-recno.t	2008-09-17 23:20:09.000000000 +0100
-+++ perl-5.7.0/t/lib/db-recno.t	2008-09-18 22:02:41.000000000 +0100
+--- perl-5.7.0.orig/t/lib/db-recno.t	2008-09-19 02:35:50.000000000 +0100
++++ perl-5.7.0/t/lib/db-recno.t	2008-09-19 02:35:51.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -w
  

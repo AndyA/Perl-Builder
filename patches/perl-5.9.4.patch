@@ -1,6 +1,6 @@
 diff -ru perl-5.9.4.orig/ext/Devel/Peek/t/Peek.t perl-5.9.4/ext/Devel/Peek/t/Peek.t
---- perl-5.9.4.orig/ext/Devel/Peek/t/Peek.t	2008-09-17 20:45:44.000000000 +0100
-+++ perl-5.9.4/ext/Devel/Peek/t/Peek.t	2008-09-17 20:45:45.000000000 +0100
+--- perl-5.9.4.orig/ext/Devel/Peek/t/Peek.t	2008-09-19 02:24:13.000000000 +0100
++++ perl-5.9.4/ext/Devel/Peek/t/Peek.t	2008-09-19 02:24:14.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -T
  
@@ -11,8 +11,8 @@ diff -ru perl-5.9.4.orig/ext/Devel/Peek/t/Peek.t perl-5.9.4/ext/Devel/Peek/t/Pee
      chdir 't' if -d 't';
      @INC = '../lib';
 diff -ru perl-5.9.4.orig/ext/POSIX/t/sysconf.t perl-5.9.4/ext/POSIX/t/sysconf.t
---- perl-5.9.4.orig/ext/POSIX/t/sysconf.t	2008-09-17 20:45:44.000000000 +0100
-+++ perl-5.9.4/ext/POSIX/t/sysconf.t	2008-09-17 20:45:45.000000000 +0100
+--- perl-5.9.4.orig/ext/POSIX/t/sysconf.t	2008-09-19 02:24:14.000000000 +0100
++++ perl-5.9.4/ext/POSIX/t/sysconf.t	2008-09-19 02:24:14.000000000 +0100
 @@ -1,5 +1,8 @@
  #!perl -T
  
@@ -23,8 +23,8 @@ diff -ru perl-5.9.4.orig/ext/POSIX/t/sysconf.t perl-5.9.4/ext/POSIX/t/sysconf.t
      if ($ENV{PERL_CORE}) {
          chdir 't';
 diff -ru perl-5.9.4.orig/ext/XS/APItest/t/op.t perl-5.9.4/ext/XS/APItest/t/op.t
---- perl-5.9.4.orig/ext/XS/APItest/t/op.t	2008-09-17 20:45:44.000000000 +0100
-+++ perl-5.9.4/ext/XS/APItest/t/op.t	2008-09-17 20:45:45.000000000 +0100
+--- perl-5.9.4.orig/ext/XS/APItest/t/op.t	2008-09-19 02:24:13.000000000 +0100
++++ perl-5.9.4/ext/XS/APItest/t/op.t	2008-09-19 02:24:14.000000000 +0100
 @@ -1,5 +1,8 @@
  #!perl -w
  
@@ -35,8 +35,8 @@ diff -ru perl-5.9.4.orig/ext/XS/APItest/t/op.t perl-5.9.4/ext/XS/APItest/t/op.t
    chdir 't' if -d 't';
    @INC = '../lib';
 diff -ru perl-5.9.4.orig/makedepend.SH perl-5.9.4/makedepend.SH
---- perl-5.9.4.orig/makedepend.SH	2008-09-17 20:45:44.000000000 +0100
-+++ perl-5.9.4/makedepend.SH	2008-09-17 20:45:45.000000000 +0100
+--- perl-5.9.4.orig/makedepend.SH	2008-09-19 02:24:13.000000000 +0100
++++ perl-5.9.4/makedepend.SH	2008-09-19 02:24:14.000000000 +0100
 @@ -128,7 +128,7 @@
      *.y) filebase=`basename $file .y` ;;
      esac
@@ -55,8 +55,8 @@ diff -ru perl-5.9.4.orig/makedepend.SH perl-5.9.4/makedepend.SH
  	    -e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
  	    -e 's/^[	 ]*#[	 ]*line/#/' \
 diff -ru perl-5.9.4.orig/patchlevel.h perl-5.9.4/patchlevel.h
---- perl-5.9.4.orig/patchlevel.h	2008-09-17 20:45:44.000000000 +0100
-+++ perl-5.9.4/patchlevel.h	2008-09-18 18:11:05.000000000 +0100
+--- perl-5.9.4.orig/patchlevel.h	2008-09-19 02:24:13.000000000 +0100
++++ perl-5.9.4/patchlevel.h	2008-09-19 02:24:14.000000000 +0100
 @@ -118,6 +118,7 @@
  #if !defined(PERL_PATCHLEVEL_H_IMPLICIT) && !defined(LOCAL_PATCH_COUNT)
  static const char * const local_patches[] = {

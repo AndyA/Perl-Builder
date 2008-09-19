@@ -1,6 +1,6 @@
 diff -ru perl-5.8.3.orig/ext/DB_File/t/db-recno.t perl-5.8.3/ext/DB_File/t/db-recno.t
---- perl-5.8.3.orig/ext/DB_File/t/db-recno.t	2008-09-17 22:39:30.000000000 +0100
-+++ perl-5.8.3/ext/DB_File/t/db-recno.t	2008-09-17 22:39:30.000000000 +0100
+--- perl-5.8.3.orig/ext/DB_File/t/db-recno.t	2008-09-19 02:28:03.000000000 +0100
++++ perl-5.8.3/ext/DB_File/t/db-recno.t	2008-09-19 02:28:03.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -w
  
@@ -11,8 +11,8 @@ diff -ru perl-5.8.3.orig/ext/DB_File/t/db-recno.t perl-5.8.3/ext/DB_File/t/db-re
      unless(grep /blib/, @INC) {
          chdir 't' if -d 't';
 diff -ru perl-5.8.3.orig/lib/File/Find/t/find.t perl-5.8.3/lib/File/Find/t/find.t
---- perl-5.8.3.orig/lib/File/Find/t/find.t	2008-09-17 22:39:30.000000000 +0100
-+++ perl-5.8.3/lib/File/Find/t/find.t	2008-09-17 22:39:30.000000000 +0100
+--- perl-5.8.3.orig/lib/File/Find/t/find.t	2008-09-19 02:28:03.000000000 +0100
++++ perl-5.8.3/lib/File/Find/t/find.t	2008-09-19 02:28:03.000000000 +0100
 @@ -1,5 +1,7 @@
  #!./perl
  
@@ -22,8 +22,8 @@ diff -ru perl-5.8.3.orig/lib/File/Find/t/find.t perl-5.8.3/lib/File/Find/t/find.
  my %Expect_File = (); # what we expect for $_ 
  my %Expect_Name = (); # what we expect for $File::Find::name/fullname
 diff -ru perl-5.8.3.orig/makedepend.SH perl-5.8.3/makedepend.SH
---- perl-5.8.3.orig/makedepend.SH	2008-09-17 22:39:30.000000000 +0100
-+++ perl-5.8.3/makedepend.SH	2008-09-17 22:39:31.000000000 +0100
+--- perl-5.8.3.orig/makedepend.SH	2008-09-19 02:28:03.000000000 +0100
++++ perl-5.8.3/makedepend.SH	2008-09-19 02:28:03.000000000 +0100
 @@ -128,7 +128,7 @@
      *.y) filebase=`basename $file .y` ;;
      esac
@@ -44,8 +44,8 @@ diff -ru perl-5.8.3.orig/makedepend.SH perl-5.8.3/makedepend.SH
  	    -e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
  	    -e 's/^[	 ]*#[	 ]*line/#/' \
 diff -ru perl-5.8.3.orig/patchlevel.h perl-5.8.3/patchlevel.h
---- perl-5.8.3.orig/patchlevel.h	2008-09-17 22:39:30.000000000 +0100
-+++ perl-5.8.3/patchlevel.h	2008-09-18 18:11:05.000000000 +0100
+--- perl-5.8.3.orig/patchlevel.h	2008-09-19 02:28:03.000000000 +0100
++++ perl-5.8.3/patchlevel.h	2008-09-19 02:28:03.000000000 +0100
 @@ -120,6 +120,7 @@
  #if !defined(PERL_PATCHLEVEL_H_IMPLICIT) && !defined(LOCAL_PATCH_COUNT)
  static	char	*local_patches[] = {
