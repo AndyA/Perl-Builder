@@ -24,7 +24,6 @@ for my $ver ( reverse @$versions ) {
   my ( $dst ) = ( $src =~ m{/([^/]+)$} );
   my $ver = Perl::Version->new( join '', ( $dst =~ $like_version ) );
   my $inst = File::Spec->catdir( File::Spec->rel2abs( $INST ), "$ver" );
-  next if -d $inst;
   my $ball = File::Spec->catfile( $BUILD, $dst );
   unless ( -e $ball ) {
     print "$src --> $ball\n";
@@ -37,11 +36,23 @@ for my $ver ( reverse @$versions ) {
   my $cmd = join( ' ', @cmd );
   print "$cmd\n";
   ( my $dir = $dst ) =~ s/\.tar\.gz$//g;
+  for my $d ( $dir, "$dir.orig" ) {
+    my $dp = File::Spec->catdir( $BUILD, $d );
+    rmtree( $dp ) if -d $dp;
+  }
   my @prepare = ();
+  my @build   = ();
   my $patch   = File::Spec->rel2abs(
     File::Spec->catfile( $PATCHES, "$dir.patch" ) );
   push @prepare, "yes n | patch -t -p1 < $patch | tee stdout.patch 2>&1"
    if -f $patch;
+  push @build,
+   "echo '$cmd' > reconfig.sh",
+   "$cmd | tee stdout.config 2>&1",
+   "make | tee stdout.make 2>&1",
+   "make test | tee stdout.test 2>&1",
+   "make install | tee stdout.install 2>&1"
+   unless -d $inst;
   my $build_cmd
    = join ' && ',
    "cd $BUILD",
@@ -50,12 +61,7 @@ for my $ver ( reverse @$versions ) {
    "cp -r $dir $dir.orig",
    "cd $dir",
    "chmod -R u+w .",
-   @prepare,
-   "echo '$cmd' > reconfig.sh",
-   "$cmd | tee stdout.config 2>&1",
-   "make | tee stdout.make 2>&1",
-   "make test | tee stdout.test 2>&1",
-   "make install | tee stdout.install 2>&1";
+   @prepare, @build;
   print "$build_cmd\n";
   system $build_cmd;
 
