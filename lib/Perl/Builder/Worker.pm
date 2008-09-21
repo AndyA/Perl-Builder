@@ -19,7 +19,7 @@ BEGIN {
 
   for my $m ( @stage ) {
     no strict 'refs';
-    *$m = sub { shift->stage( $m, @_ ) };
+    *$m = sub { shift->stage( $m, @_ )->run; };
   }
 }
 
@@ -48,6 +48,20 @@ Execute the named build stage.
 =cut
 
 sub stage {
+  my ( $self, $stage, @args ) = @_;
+  my $class = $self->_class_for_stage( $stage );
+  eval "require $class";
+  croak $@ if $@;
+  return $class->new(
+    spec   => $self->spec,
+    config => $self->config,
+    @args
+  );
+}
+
+sub _class_for_stage {
+  my ( $self, $stage ) = @_;
+  return 'Perl::Builder::Stage::' . ucfirst( lc( $stage ) );
 }
 
 1;

@@ -1,7 +1,6 @@
 package Perl::Builder::Config;
 
-use strict;
-use warnings;
+use Moose;
 
 =head1 NAME
 
@@ -14,6 +13,10 @@ The URL of the user's preferred CPAN mirror.
 =cut
 
 sub cpan_url { 'http://cpan.ripley/' }
+
+sub prefix { die }
+
+sub build_dir { die }
 
 1;
 

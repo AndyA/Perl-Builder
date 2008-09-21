@@ -44,14 +44,12 @@ sub for_version {
   my $version = shift;
   $version = Perl::Builder::Version->new( $version )
    unless 'Perl::Version' eq ref $version;
-  my $spec = $self->_spec_for_version
+  my $spec = $self->_spec_for_version( $version )
    or croak "No build specification found for Perl $version";
-  return Perl::Builder::Worker( spec => $spec,
-    config => $self->config );
-}
-
-sub config {
-  my $self = shift;
+  return Perl::Builder::Worker->new(
+    spec   => $spec,
+    config => $self->config
+  );
 }
 
 sub _spec_for_version {

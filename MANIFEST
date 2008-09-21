@@ -41,6 +41,7 @@ patches/perl5.005_03.patch
 patches/perl5.005_04.patch
 README
 t/00.load.t
+t/builder.t
 t/pod-coverage.t
 t/pod.t
 t/version.t
