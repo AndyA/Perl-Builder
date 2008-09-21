@@ -69,7 +69,7 @@ for my $ver ( reverse @$versions ) {
 
 if ( @failed ) {
   print "The following versions had build problems:\n";
-  print "  $_" for sort @failed;
+  print "  $_\n" for sort @failed;
 }
 
 # vim:ts=2:sw=2:sts=2:et:ft=perl
