@@ -1,6 +1,10 @@
 Changes
 lib/Perl/Builder.pm
 lib/Perl/Builder/Config.pm
+lib/Perl/Builder/Role/Configurable.pm
+lib/Perl/Builder/Role/Speccable.pm
+lib/Perl/Builder/Stage.pm
+lib/Perl/Builder/Stage/Fetch.pm
 lib/Perl/Builder/Version.pm
 lib/Perl/Builder/Worker.pm
 Makefile.PL

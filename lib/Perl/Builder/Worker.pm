@@ -3,6 +3,10 @@ package Perl::Builder::Worker;
 use Moose;
 use Moose::Util::TypeConstraints;
 
+with
+ 'Perl::Builder::Role::Configurable',
+ 'Perl::Builder::Role::Speccable';
+
 my @stage;
 
 BEGIN {
@@ -22,20 +26,6 @@ BEGIN {
     *$m = sub { shift->stage( $m, @_ )->run; };
   }
 }
-
-#enum 'BuildStage' => @stage;
-
-# I guess this is going to be a trait. Fun.
-has config => (
-  is       => 'ro',
-  isa      => 'Perl::Builder::Config',
-  required => 1,
-);
-
-has spec => (
-  is       => 'ro',
-  required => 1,
-);
 
 =head1 NAME
 
