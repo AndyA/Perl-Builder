@@ -24,7 +24,7 @@ for my $version ( @versions ) {
   ok my $w = $b->for_version( $version ), "$version: got worker";
   #use Data::Dumper;
   #diag( Dumper( $w ) );
-  isa_ok $w, 'Perl::Builder::Worker';
+  isa_ok $w, 'Perl::Builder::Worker', "$version: worker";
   $w->fetch;
 }
 

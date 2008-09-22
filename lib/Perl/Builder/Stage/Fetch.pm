@@ -51,7 +51,7 @@ Return true if the archive has already been fully downloaded.
 sub is_done {
   my $self = shift;
   my ( $file, $url ) = $self->_get_file_and_url;
-  return -f $file && -s _ eq $self->_url_size( $url );
+  return -f $file && -s _ == $self->_url_size( $url );
 }
 
 sub _url_size {
@@ -64,8 +64,8 @@ sub _url_size {
 sub _get_file_and_url {
   my $self   = shift;
   my $source = $self->spec->source;
-  my $file = $self->work_file( $self->_url_leaf( $source ) );
-  my $cpan = $self->_url_tidy( $self->need_option( 'cpan_url' ) );
+  my $file   = $self->work_file( $self->_url_leaf( $source ) );
+  my $cpan   = $self->_url_tidy( $self->need_option( 'cpan_url' ) );
   return ( $file, $cpan . $source );
 }
 
@@ -77,7 +77,6 @@ sub _url_tidy {
 
 sub _url_leaf {
   my ( $self, $url ) = @_;
-  # Don't use File::Spec because URLs are always '/' separated.
   return $1 if $url =~ m{([^/]+)$};
   return $url;
 }
