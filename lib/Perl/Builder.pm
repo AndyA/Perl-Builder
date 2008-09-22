@@ -6,6 +6,7 @@ use Carp qw( croak );
 use Perl::Builder::Config;
 use Perl::Builder::Version;
 use Perl::Builder::Worker;
+use Perl::Builder::Spec;
 
 has config => (
   is      => 'ro',
@@ -46,8 +47,9 @@ sub for_version {
    unless 'Perl::Version' eq ref $version;
   my $spec = $self->_spec_for_version( $version )
    or croak "No build specification found for Perl $version";
+  my $sp = Perl::Builder::Spec->new( %$spec );
   return Perl::Builder::Worker->new(
-    spec   => $spec,
+    spec   => $sp,
     config => $self->config
   );
 }
@@ -56,6 +58,7 @@ sub _spec_for_version {
   my $self    = shift;
   my $version = shift;
   for my $spec ( @{ $self->_get_dictionary } ) {
+    #return Perl::Builder::Spec->new( %$spec )
     return $spec
      if $version eq Perl::Builder::Version->new( $spec->{version} );
   }

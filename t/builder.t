@@ -22,8 +22,11 @@ plan tests => @versions * 2;
 for my $version ( @versions ) {
   my $b = Perl::Builder->new;
   my $w = eval { $b->for_version( $version ) };
-  ok !$@;
+  ok !$@, "$version: got worker";
+  use Data::Dumper;
+  diag( Dumper( $w ) );
   isa_ok $w, 'Perl::Builder::Worker';
+  $w->fetch;
 }
 
 # vim:ts=2:sw=2:et:ft=perl

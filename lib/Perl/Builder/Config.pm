@@ -2,21 +2,30 @@ package Perl::Builder::Config;
 
 use Moose;
 
+# Hardwire the options for now
+
+my %Options = (
+  cpan_url  => 'http://cpan.ripley',
+  prefix    => sub { die },
+  build_dir => sub { die },
+);
+
 =head1 NAME
 
 Perl::Builder::Config - Configuration for Perl::Builder
 
-=head2 C<< cpan_url >>
+=head2 C<< option >>
 
-The URL of the user's preferred CPAN mirror.
+Retrieve an option value.
 
 =cut
 
-sub cpan_url { 'http://cpan.ripley/' }
-
-sub prefix { die }
-
-sub build_dir { die }
+sub option {
+  my ( $self, $name, $default ) = @_;
+  my $value = exists $Options{$name} ? $Options{$name} : $default;
+  $value = $value->( $name ) if 'CODE' eq ref $value;
+  return $value;
+}
 
 1;
 

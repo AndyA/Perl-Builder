@@ -1,22 +1,4 @@
-use strict;
-use warnings;
-use ExtUtils::MakeMaker;
+use Module::Build::Compat;
 
-eval 'use ExtUtils::MakeMaker::Coverage';
-
-WriteMakefile(
-  ( MM->can( 'signature_target' ) ? ( SIGN => 1 ) : () ),
-  NAME          => 'Perl::Builder',
-  AUTHOR        => 'Andy Armstrong <andy.armstrong@messagesystems.com>',
-  LICENSE       => 'perl',
-  VERSION_FROM  => 'lib/Perl/Builder.pm',
-  ABSTRACT_FROM => 'lib/Perl/Builder.pm',
-  PL_FILES      => {},
-  PREREQ_PM     => {
-    'Test::More'     => 0,
-    'Moose'          => '0.50',
-    'LWP::UserAgent' => 0,
-  },
-  dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-  clean => { FILES    => 'Perl-Builder-*' },
-);
+Module::Build::Compat->run_build_pl( args => \@ARGV );
+Module::Build::Compat->write_makefile();

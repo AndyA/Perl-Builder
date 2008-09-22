@@ -1,6 +1,6 @@
 package Perl::Builder::Role::Speccable;
 
-use Moose;
+use Moose::Role;
 
 has spec => (
   is       => 'ro',
