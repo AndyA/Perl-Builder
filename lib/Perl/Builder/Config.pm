@@ -7,7 +7,7 @@ use Moose;
 my %Options = (
   cpan_url  => 'http://cpan.ripley',
   prefix    => sub { die },
-  build_dir => sub { die },
+  build_dir => '/tmp/perl-builder',
 );
 
 =head1 NAME

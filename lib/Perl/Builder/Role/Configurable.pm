@@ -2,6 +2,9 @@ package Perl::Builder::Role::Configurable;
 
 use Moose::Role;
 use Carp qw( croak );
+use File::Path;
+use File::Spec;
+use File::Basename;
 
 has config => (
   is       => 'ro',
@@ -28,6 +31,29 @@ sub need_option {
       croak "Option $name is mandatory";
     }
   );
+}
+
+=head2 C<< work_file >>
+
+Get the name of a file relative to the build directory.
+
+=cut
+
+sub work_file {
+  my ( $self, $name ) = @_;
+  my $file
+   = File::Spec->catfile( $self->need_option( 'build_dir' ), $name );
+  mkpath( dirname( $file ) );
+  return $file;
+
+}
+
+sub work_dir {
+  my ( $self, $name ) = @_;
+  my $dir
+   = File::Spec->catdir( $self->need_option( 'build_dir' ), $name );
+  mkpath( $dir );
+  return $dir;
 }
 
 1;

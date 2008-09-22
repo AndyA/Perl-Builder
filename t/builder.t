@@ -17,14 +17,13 @@ my @versions = qw(
  5.9.4    5.9.5    5.10.0
 );
 
-plan tests => @versions * 2;
+plan tests => @versions * 3;
 
 for my $version ( @versions ) {
-  my $b = Perl::Builder->new;
-  my $w = eval { $b->for_version( $version ) };
-  ok !$@, "$version: got worker";
-  use Data::Dumper;
-  diag( Dumper( $w ) );
+  ok my $b = Perl::Builder->new, "$version: got builder";
+  ok my $w = $b->for_version( $version ), "$version: got worker";
+  #use Data::Dumper;
+  #diag( Dumper( $w ) );
   isa_ok $w, 'Perl::Builder::Worker';
   $w->fetch;
 }
