@@ -4,6 +4,7 @@ use Moose;
 
 with
  'Perl::Builder::Role::Configurable',
+ 'Perl::Builder::Role::Loggable',
  'Perl::Builder::Role::Speccable';
 
 =head1 NAME

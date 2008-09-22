@@ -8,9 +8,10 @@ my $builder = Module::Build->new(
   dist_author => 'Andy Armstrong <andy.armstrong@messagesystems.com>',
   dist_version_from => 'lib/Perl/Builder.pm',
   requires          => {
-    'Test::More'     => 0,
-    'Moose'          => '0.50',
+    'App::Cmd'       => '0.200',
     'LWP::UserAgent' => 0,
+    'Moose'          => '0.50',
+    'Test::More'     => 0,
   },
   add_to_cleanup => ['Perl-Builder-*'],
 );

@@ -8,6 +8,7 @@ my %Options = (
   cpan_url  => 'http://cpan.ripley',
   prefix    => sub { die },
   build_dir => '/tmp/perl-builder',
+  verbosity => 9,
 );
 
 =head1 NAME

@@ -7,10 +7,6 @@ use File::Spec;
 
 extends 'Perl::Builder::Stage';
 
-with
- 'Perl::Builder::Role::Configurable',
- 'Perl::Builder::Role::Speccable';
-
 has ua => (
   is      => 'ro',
   isa     => 'LWP::UserAgent',
@@ -37,9 +33,11 @@ sub run {
   if ( -f $file ) {
     unlink $file or croak "Can't delete old $file";
   }
-  warn "# $url -> $file\n";
-  my $resp = $self->ua->get( $url, ':content_file' => $file );
-  carp $resp->status_line if $resp->is_error;
+  {
+    my $la = $self->report( 0, 'downloading ', $url, ' to ', $file );
+    my $resp = $self->ua->get( $url, ':content_file' => $file );
+    carp $resp->status_line if $resp->is_error;
+  }
 }
 
 =head2 C<< is_done >>
