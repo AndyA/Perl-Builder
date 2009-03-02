@@ -2,15 +2,17 @@
 
 use strict;
 use warnings;
-use YAML qw( LoadFile );
-use File::Spec;
+
 use File::Path;
+use File::Spec;
+use Getopt::Long;
 use LWP::UserAgent;
 use Perl::Version;
+use YAML qw( LoadFile );
 
 my $CPAN    = 'http://cpan.ripley/';
 my $BUILD   = 'build';
-my $INST    = 'inst';
+my $INST    = glob '~/Works/Perl/versions';
 my $PATCHES = 'patches';
 
 my $like_version = Perl::Version::REGEX;
@@ -19,7 +21,7 @@ mkpath( $BUILD );
 my $versions = LoadFile( 'versions.yaml' );
 
 my @failed = ();
-my $ua = LWP::UserAgent->new;
+my $ua     = LWP::UserAgent->new;
 for my $ver ( reverse @$versions ) {
   my $src = $CPAN . $ver->{source};
   my ( $dst ) = ( $src =~ m{/([^/]+)$} );
@@ -43,10 +45,9 @@ for my $ver ( reverse @$versions ) {
   }
   my @prepare = ();
   my @build   = ();
-  my $patch   = File::Spec->rel2abs(
-    File::Spec->catfile( $PATCHES, "$dir.patch" ) );
-  push @prepare, "yes n | patch -t -p1 < $patch | tee stdout.patch 2>&1"
-   if -f $patch;
+
+  push @prepare, patches( $dir );
+
   push @build,
    "echo '$cmd' > reconfig.sh",
    "$cmd | tee stdout.config 2>&1",
@@ -54,6 +55,7 @@ for my $ver ( reverse @$versions ) {
    "make test | tee stdout.test 2>&1",
    "make install | tee stdout.install 2>&1"
    unless -d $inst;
+
   my $build_cmd
    = join ' && ',
    "cd $BUILD",
@@ -63,8 +65,26 @@ for my $ver ( reverse @$versions ) {
    "cd $dir",
    "chmod -R u+w .",
    @prepare, @build;
+
   print "$build_cmd\n";
   system $build_cmd and push @failed, $ver;
+}
+
+sub patches {
+  my $dir = shift;
+  my @cmd = ();
+  my $patch_dir
+   = File::Spec->rel2abs( File::Spec->catdir( $PATCHES, $dir ) );
+  return unless -d $patch_dir;
+  my $index = File::Spec->catfile( $patch_dir, 'index' );
+  open my $ih, '<', $index or die "Can't read $index ($1)\n";
+  while ( <$ih> ) {
+    chomp;
+    my $patch = File::Spec->catfile( $patch_dir, $_ );
+    die "$patch not found\n" unless -f $patch;
+    push @cmd, "yes n | patch -t -p1 < $patch | tee stdout.patch 2>&1";
+  }
+  return @cmd;
 }
 
 if ( @failed ) {

@@ -5,7 +5,7 @@ dir=$2
 patches=../patches
 
 name=`basename $dir`
-patch=$patches/$name.patch
+patch=$patches/$name/perl.patch
 echo Extracting patches for $name
 diff -ru $orig $dir | egrep -v '^Only in ' > $patch
 [ -s $patch ] || rm -f $patch
