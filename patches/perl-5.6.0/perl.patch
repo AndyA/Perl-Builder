@@ -1,7 +1,43 @@
-diff -ru perl-5.6.0.orig/Configure perl-5.6.0/Configure
---- perl-5.6.0.orig/Configure	2008-09-19 02:38:45.000000000 +0100
-+++ perl-5.6.0/Configure	2008-09-19 02:38:45.000000000 +0100
-@@ -13690,7 +13690,7 @@
+diff -uNr perl-5.6.0.orig/config_h.SH perl-5.6.0/config_h.SH
+--- perl-5.6.0.orig/config_h.SH	2009-05-04 00:09:43.000000000 +0100
++++ perl-5.6.0/config_h.SH	2009-05-04 00:13:14.000000000 +0100
+@@ -1511,6 +1511,13 @@
+  */
+ #$d_getnetprotos	HAS_GETNET_PROTOS	/**/
+ 
++/* HAS_GETPAGESIZE:
++ *	This symbol, if defined, indicates that the getpagesize system call
++ *	is available to get system page size, which is the granularity of
++ *	many memory management calls.
++ */
++#$d_getpagsz HAS_GETPAGESIZE		/**/
++
+ /* HAS_GETPROTOENT:
+  *	This symbol, if defined, indicates that the getprotoent() routine is
+  *	available to look up protocols in some data base or another.
+diff -uNr perl-5.6.0.orig/Configure perl-5.6.0/Configure
+--- perl-5.6.0.orig/Configure	2009-05-04 00:09:44.000000000 +0100
++++ perl-5.6.0/Configure	2009-05-04 00:13:14.000000000 +0100
+@@ -382,6 +382,7 @@
+ d_getnbyname=''
+ d_getnent=''
+ d_getnetprotos=''
++d_getpagsz=''
+ d_getpent=''
+ d_getpgid=''
+ d_getpgrp2=''
+@@ -9254,6 +9255,10 @@
+ set d_gethostprotos gethostent $i_netdb netdb.h
+ eval $hasproto
+ 
++: see if getpagesize exists
++set getpagesize d_getpagsz
++eval $inlibc
++
+ : see if getlogin exists
+ set getlogin d_getlogin
+ eval $inlibc
+@@ -13690,7 +13695,7 @@
  
  set signal
  if eval $compile_ok; then
@@ -10,7 +46,7 @@ diff -ru perl-5.6.0.orig/Configure perl-5.6.0/Configure
  else
  	echo "(I can't seem be able to compile the whole test program)" >&4
  	echo "(I'll try it in little pieces.)" >&4
-@@ -13724,7 +13724,7 @@
+@@ -13724,7 +13729,7 @@
  	done
  	if $test -s signal.ls1; then
  		$cat signal.nsg signal.ls1 |
@@ -19,9 +55,17 @@ diff -ru perl-5.6.0.orig/Configure perl-5.6.0/Configure
  	fi
  
  fi
-diff -ru perl-5.6.0.orig/ext/DB_File/DB_File.xs perl-5.6.0/ext/DB_File/DB_File.xs
---- perl-5.6.0.orig/ext/DB_File/DB_File.xs	2008-09-19 02:38:45.000000000 +0100
-+++ perl-5.6.0/ext/DB_File/DB_File.xs	2008-09-19 03:02:28.000000000 +0100
+@@ -15200,6 +15205,7 @@
+ d_getnbyname='$d_getnbyname'
+ d_getnent='$d_getnent'
+ d_getnetprotos='$d_getnetprotos'
++d_getpagsz='$d_getpagsz'
+ d_getpbyname='$d_getpbyname'
+ d_getpbynumber='$d_getpbynumber'
+ d_getpent='$d_getpent'
+diff -uNr perl-5.6.0.orig/ext/DB_File/DB_File.xs perl-5.6.0/ext/DB_File/DB_File.xs
+--- perl-5.6.0.orig/ext/DB_File/DB_File.xs	2009-05-04 00:09:43.000000000 +0100
++++ perl-5.6.0/ext/DB_File/DB_File.xs	2009-05-04 00:13:09.000000000 +0100
 @@ -158,6 +158,10 @@
  #    define BERKELEY_DB_1_OR_2
  #endif
@@ -48,9 +92,38 @@ diff -ru perl-5.6.0.orig/ext/DB_File/DB_File.xs perl-5.6.0/ext/DB_File/DB_File.x
  	/* printf("open returned %d %s\n", status, db_strerror(status)) ; */
  
          if (status == 0)
-diff -ru perl-5.6.0.orig/makedepend.SH perl-5.6.0/makedepend.SH
---- perl-5.6.0.orig/makedepend.SH	2008-09-19 02:38:45.000000000 +0100
-+++ perl-5.6.0/makedepend.SH	2008-09-19 02:38:45.000000000 +0100
+diff -uNr perl-5.6.0.orig/ext/IPC/SysV/SysV.xs perl-5.6.0/ext/IPC/SysV/SysV.xs
+--- perl-5.6.0.orig/ext/IPC/SysV/SysV.xs	2009-05-04 00:09:43.000000000 +0100
++++ perl-5.6.0/ext/IPC/SysV/SysV.xs	2009-05-04 00:12:59.000000000 +0100
+@@ -3,9 +3,6 @@
+ #include "XSUB.h"
+ 
+ #include <sys/types.h>
+-#ifdef __linux__
+-#   include <asm/page.h>
+-#endif
+ #if defined(HAS_MSG) || defined(HAS_SEM) || defined(HAS_SHM)
+ #ifndef HAS_SEM
+ #   include <sys/ipc.h>
+@@ -21,9 +18,14 @@
+ #      ifndef HAS_SHMAT_PROTOTYPE
+            extern Shmat_t shmat (int, char *, int);
+ #      endif
+-#      if defined(__sparc__) && (defined(__NetBSD__) || defined(__OpenBSD__))
++#      if defined(HAS_SYSCONF) && defined(_SC_PAGESIZE)
++#          undef  SHMLBA /* not static: determined at boot time */
++#          define SHMLBA sysconf(_SC_PAGESIZE)
++#      elif defined(HAS_GETPAGESIZE)
+ #          undef  SHMLBA /* not static: determined at boot time */
+ #          define SHMLBA getpagesize()
++#      elif defined(__linux__)
++#          include <asm/page.h>          
+ #      endif
+ #   endif
+ #endif
+diff -uNr perl-5.6.0.orig/makedepend.SH perl-5.6.0/makedepend.SH
+--- perl-5.6.0.orig/makedepend.SH	2009-05-04 00:09:44.000000000 +0100
++++ perl-5.6.0/makedepend.SH	2009-05-04 00:13:09.000000000 +0100
 @@ -117,7 +117,7 @@
      *.y) filebase=`basename $file .y` ;;
      esac
@@ -93,9 +166,9 @@ diff -ru perl-5.6.0.orig/makedepend.SH perl-5.6.0/makedepend.SH
      $uniq | $sort | $uniq >> .deptmp
  done
  
-diff -ru perl-5.6.0.orig/t/lib/db-btree.t perl-5.6.0/t/lib/db-btree.t
---- perl-5.6.0.orig/t/lib/db-btree.t	2008-09-19 02:38:45.000000000 +0100
-+++ perl-5.6.0/t/lib/db-btree.t	2008-09-19 03:05:06.000000000 +0100
+diff -uNr perl-5.6.0.orig/t/lib/db-btree.t perl-5.6.0/t/lib/db-btree.t
+--- perl-5.6.0.orig/t/lib/db-btree.t	2009-05-04 00:09:44.000000000 +0100
++++ perl-5.6.0/t/lib/db-btree.t	2009-05-04 00:13:09.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -w
  
@@ -105,9 +178,9 @@ diff -ru perl-5.6.0.orig/t/lib/db-btree.t perl-5.6.0/t/lib/db-btree.t
  BEGIN {
      unshift @INC, '../lib' if -d '../lib' ;
      require Config; import Config;
-diff -ru perl-5.6.0.orig/t/lib/db-hash.t perl-5.6.0/t/lib/db-hash.t
---- perl-5.6.0.orig/t/lib/db-hash.t	2008-09-19 02:38:45.000000000 +0100
-+++ perl-5.6.0/t/lib/db-hash.t	2008-09-19 03:06:21.000000000 +0100
+diff -uNr perl-5.6.0.orig/t/lib/db-hash.t perl-5.6.0/t/lib/db-hash.t
+--- perl-5.6.0.orig/t/lib/db-hash.t	2009-05-04 00:09:44.000000000 +0100
++++ perl-5.6.0/t/lib/db-hash.t	2009-05-04 00:13:09.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -w
  
@@ -117,9 +190,9 @@ diff -ru perl-5.6.0.orig/t/lib/db-hash.t perl-5.6.0/t/lib/db-hash.t
  BEGIN {
      unshift @INC, '../lib' if -d '../lib' ;
      require Config; import Config;
-diff -ru perl-5.6.0.orig/t/lib/db-recno.t perl-5.6.0/t/lib/db-recno.t
---- perl-5.6.0.orig/t/lib/db-recno.t	2008-09-19 02:38:45.000000000 +0100
-+++ perl-5.6.0/t/lib/db-recno.t	2008-09-19 03:06:35.000000000 +0100
+diff -uNr perl-5.6.0.orig/t/lib/db-recno.t perl-5.6.0/t/lib/db-recno.t
+--- perl-5.6.0.orig/t/lib/db-recno.t	2009-05-04 00:09:44.000000000 +0100
++++ perl-5.6.0/t/lib/db-recno.t	2009-05-04 00:13:09.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -w
  

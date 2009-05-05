@@ -1,6 +1,6 @@
-diff -ru perl-5.9.1.orig/ext/DB_File/t/db-recno.t perl-5.9.1/ext/DB_File/t/db-recno.t
---- perl-5.9.1.orig/ext/DB_File/t/db-recno.t	2008-09-19 02:25:26.000000000 +0100
-+++ perl-5.9.1/ext/DB_File/t/db-recno.t	2008-09-19 02:25:26.000000000 +0100
+diff -uNr perl-5.9.1.orig/ext/DB_File/t/db-recno.t perl-5.9.1/ext/DB_File/t/db-recno.t
+--- perl-5.9.1.orig/ext/DB_File/t/db-recno.t	2009-05-03 20:03:03.000000000 +0100
++++ perl-5.9.1/ext/DB_File/t/db-recno.t	2009-05-03 20:03:04.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -w
  
@@ -10,9 +10,38 @@ diff -ru perl-5.9.1.orig/ext/DB_File/t/db-recno.t perl-5.9.1/ext/DB_File/t/db-re
  BEGIN {
      unless(grep /blib/, @INC) {
          chdir 't' if -d 't';
-diff -ru perl-5.9.1.orig/lib/File/Find/t/find.t perl-5.9.1/lib/File/Find/t/find.t
---- perl-5.9.1.orig/lib/File/Find/t/find.t	2008-09-19 02:25:26.000000000 +0100
-+++ perl-5.9.1/lib/File/Find/t/find.t	2008-09-19 02:25:26.000000000 +0100
+diff -uNr perl-5.9.1.orig/ext/IPC/SysV/SysV.xs perl-5.9.1/ext/IPC/SysV/SysV.xs
+--- perl-5.9.1.orig/ext/IPC/SysV/SysV.xs	2009-05-03 20:03:03.000000000 +0100
++++ perl-5.9.1/ext/IPC/SysV/SysV.xs	2009-05-03 20:06:31.000000000 +0100
+@@ -3,9 +3,6 @@
+ #include "XSUB.h"
+ 
+ #include <sys/types.h>
+-#ifdef __linux__
+-#   include <asm/page.h>
+-#endif
+ #if defined(HAS_MSG) || defined(HAS_SEM) || defined(HAS_SHM)
+ #ifndef HAS_SEM
+ #   include <sys/ipc.h>
+@@ -21,9 +18,14 @@
+ #      ifndef HAS_SHMAT_PROTOTYPE
+            extern Shmat_t shmat (int, char *, int);
+ #      endif
+-#      if defined(__sparc__) && (defined(__NetBSD__) || defined(__OpenBSD__))
++#      if defined(HAS_SYSCONF) && defined(_SC_PAGESIZE)
++#          undef  SHMLBA /* not static: determined at boot time */
++#          define SHMLBA sysconf(_SC_PAGESIZE)
++#      elif defined(HAS_GETPAGESIZE)
+ #          undef  SHMLBA /* not static: determined at boot time */
+ #          define SHMLBA getpagesize()
++#      elif defined(__linux__)
++#          include <asm/page.h>          
+ #      endif
+ #   endif
+ #endif
+diff -uNr perl-5.9.1.orig/lib/File/Find/t/find.t perl-5.9.1/lib/File/Find/t/find.t
+--- perl-5.9.1.orig/lib/File/Find/t/find.t	2009-05-03 20:03:04.000000000 +0100
++++ perl-5.9.1/lib/File/Find/t/find.t	2009-05-03 20:03:04.000000000 +0100
 @@ -1,5 +1,7 @@
  #!./perl
  
@@ -21,9 +50,9 @@ diff -ru perl-5.9.1.orig/lib/File/Find/t/find.t perl-5.9.1/lib/File/Find/t/find.
  
  my %Expect_File = (); # what we expect for $_ 
  my %Expect_Name = (); # what we expect for $File::Find::name/fullname
-diff -ru perl-5.9.1.orig/makedepend.SH perl-5.9.1/makedepend.SH
---- perl-5.9.1.orig/makedepend.SH	2008-09-19 02:25:26.000000000 +0100
-+++ perl-5.9.1/makedepend.SH	2008-09-19 02:25:27.000000000 +0100
+diff -uNr perl-5.9.1.orig/makedepend.SH perl-5.9.1/makedepend.SH
+--- perl-5.9.1.orig/makedepend.SH	2009-05-03 20:03:04.000000000 +0100
++++ perl-5.9.1/makedepend.SH	2009-05-03 20:03:04.000000000 +0100
 @@ -128,7 +128,7 @@
      *.y) filebase=`basename $file .y` ;;
      esac
@@ -43,9 +72,9 @@ diff -ru perl-5.9.1.orig/makedepend.SH perl-5.9.1/makedepend.SH
  	    -e '/: file path prefix .* never used$/d' \
  	    -e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
  	    -e 's/^[	 ]*#[	 ]*line/#/' \
-diff -ru perl-5.9.1.orig/patchlevel.h perl-5.9.1/patchlevel.h
---- perl-5.9.1.orig/patchlevel.h	2008-09-19 02:25:26.000000000 +0100
-+++ perl-5.9.1/patchlevel.h	2008-09-19 02:25:27.000000000 +0100
+diff -uNr perl-5.9.1.orig/patchlevel.h perl-5.9.1/patchlevel.h
+--- perl-5.9.1.orig/patchlevel.h	2009-05-03 20:03:03.000000000 +0100
++++ perl-5.9.1/patchlevel.h	2009-05-03 20:03:04.000000000 +0100
 @@ -120,6 +120,7 @@
  #if !defined(PERL_PATCHLEVEL_H_IMPLICIT) && !defined(LOCAL_PATCH_COUNT)
  static	char	*local_patches[] = {

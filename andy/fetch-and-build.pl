@@ -10,10 +10,15 @@ use LWP::UserAgent;
 use Perl::Version;
 use YAML qw( LoadFile );
 
+my %options = ( stop_on_fail => 0 );
+
 my $CPAN    = 'http://cpan.ripley/';
 my $BUILD   = 'build';
 my $INST    = glob '~/Works/Perl/versions';
 my $PATCHES = 'patches';
+
+GetOptions( 'S|stop-on-fail' => \$options{stop_on_fail} )
+ or die "Bad option";
 
 my $like_version = Perl::Version::REGEX;
 
@@ -22,7 +27,8 @@ my $versions = LoadFile( 'versions.yaml' );
 
 my @failed = ();
 my $ua     = LWP::UserAgent->new;
-for my $ver ( reverse @$versions ) {
+
+VERSION: for my $ver ( reverse @$versions ) {
   my $src = $CPAN . $ver->{source};
   my ( $dst ) = ( $src =~ m{/([^/]+)$} );
   my $ver = Perl::Version->new( join '', ( $dst =~ $like_version ) );
@@ -43,17 +49,10 @@ for my $ver ( reverse @$versions ) {
     my $dp = File::Spec->catdir( $BUILD, $d );
     rmtree( $dp ) if -d $dp;
   }
-  my @prepare = ();
-  my @build   = ();
+  my @build = ();
 
-  push @prepare, patches( $dir );
-
-  push @build,
-   "echo '$cmd' > reconfig.sh",
-   "$cmd | tee stdout.config 2>&1",
-   "make | tee stdout.make 2>&1",
-   "make test | tee stdout.test 2>&1",
-   "make install | tee stdout.install 2>&1"
+  push @build, patches( $dir );
+  push @build, $cmd, "make", "make test", "make install"
    unless -d $inst;
 
   my $build_cmd
@@ -64,10 +63,24 @@ for my $ver ( reverse @$versions ) {
    "cp -r $dir $dir.orig",
    "cd $dir",
    "chmod -R u+w .",
-   @prepare, @build;
+   "echo '$cmd' > reconfig.sh",
+   catch( 'stdout.build', @build );
 
   print "$build_cmd\n";
-  system $build_cmd and push @failed, $ver;
+  system $build_cmd and warn "$build_cmd failed $?\n";
+
+  unless ( -d $inst ) {
+    warn "Build failed\n";
+    push @failed, $ver;
+    last if $options{stop_on_fail};
+  }
+
+}
+
+sub catch {
+  my $file = shift;
+  return unless @_;
+  return '{ ' . join( ' && ', @_ ) . " ; } | tee $file 2>&1";
 }
 
 sub patches {
@@ -82,7 +95,7 @@ sub patches {
     chomp;
     my $patch = File::Spec->catfile( $patch_dir, $_ );
     die "$patch not found\n" unless -f $patch;
-    push @cmd, "yes n | patch -t -p1 < $patch | tee stdout.patch 2>&1";
+    push @cmd, "yes n | patch -t -p1 < $patch";
   }
   return @cmd;
 }

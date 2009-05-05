@@ -1,6 +1,6 @@
-diff -ru perl-5.9.3.orig/ext/Devel/Peek/t/Peek.t perl-5.9.3/ext/Devel/Peek/t/Peek.t
---- perl-5.9.3.orig/ext/Devel/Peek/t/Peek.t	2008-09-19 02:24:39.000000000 +0100
-+++ perl-5.9.3/ext/Devel/Peek/t/Peek.t	2008-09-19 02:24:40.000000000 +0100
+diff -uNr perl-5.9.3.orig/ext/Devel/Peek/t/Peek.t perl-5.9.3/ext/Devel/Peek/t/Peek.t
+--- perl-5.9.3.orig/ext/Devel/Peek/t/Peek.t	2009-05-03 19:34:34.000000000 +0100
++++ perl-5.9.3/ext/Devel/Peek/t/Peek.t	2009-05-03 19:34:34.000000000 +0100
 @@ -1,5 +1,8 @@
  #!./perl -T
  
@@ -10,9 +10,38 @@ diff -ru perl-5.9.3.orig/ext/Devel/Peek/t/Peek.t perl-5.9.3/ext/Devel/Peek/t/Pee
  BEGIN {
      chdir 't' if -d 't';
      @INC = '../lib';
-diff -ru perl-5.9.3.orig/makedepend.SH perl-5.9.3/makedepend.SH
---- perl-5.9.3.orig/makedepend.SH	2008-09-19 02:24:39.000000000 +0100
-+++ perl-5.9.3/makedepend.SH	2008-09-19 02:24:40.000000000 +0100
+diff -uNr perl-5.9.3.orig/ext/IPC/SysV/SysV.xs perl-5.9.3/ext/IPC/SysV/SysV.xs
+--- perl-5.9.3.orig/ext/IPC/SysV/SysV.xs	2009-05-03 19:34:34.000000000 +0100
++++ perl-5.9.3/ext/IPC/SysV/SysV.xs	2009-05-03 19:39:42.000000000 +0100
+@@ -3,9 +3,6 @@
+ #include "XSUB.h"
+ 
+ #include <sys/types.h>
+-#ifdef __linux__
+-#   include <asm/page.h>
+-#endif
+ #if defined(HAS_MSG) || defined(HAS_SEM) || defined(HAS_SHM)
+ #ifndef HAS_SEM
+ #   include <sys/ipc.h>
+@@ -21,9 +18,14 @@
+ #      ifndef HAS_SHMAT_PROTOTYPE
+            extern Shmat_t shmat (int, char *, int);
+ #      endif
+-#      if defined(__sparc__) && (defined(__NetBSD__) || defined(__OpenBSD__))
++#      if defined(HAS_SYSCONF) && defined(_SC_PAGESIZE)
++#          undef  SHMLBA /* not static: determined at boot time */
++#          define SHMLBA sysconf(_SC_PAGESIZE)
++#      elif defined(HAS_GETPAGESIZE)
+ #          undef  SHMLBA /* not static: determined at boot time */
+ #          define SHMLBA getpagesize()
++#      elif defined(__linux__)
++#          include <asm/page.h>          
+ #      endif
+ #   endif
+ #endif
+diff -uNr perl-5.9.3.orig/makedepend.SH perl-5.9.3/makedepend.SH
+--- perl-5.9.3.orig/makedepend.SH	2009-05-03 19:34:34.000000000 +0100
++++ perl-5.9.3/makedepend.SH	2009-05-03 19:34:34.000000000 +0100
 @@ -128,7 +128,7 @@
      *.y) filebase=`basename $file .y` ;;
      esac
@@ -32,9 +61,9 @@ diff -ru perl-5.9.3.orig/makedepend.SH perl-5.9.3/makedepend.SH
  	    -e '/: file path prefix .* never used$/d' \
  	    -e 's#\.[0-9][0-9]*\.c#'"$file.c#" \
  	    -e 's/^[	 ]*#[	 ]*line/#/' \
-diff -ru perl-5.9.3.orig/patchlevel.h perl-5.9.3/patchlevel.h
---- perl-5.9.3.orig/patchlevel.h	2008-09-19 02:24:39.000000000 +0100
-+++ perl-5.9.3/patchlevel.h	2008-09-19 02:24:40.000000000 +0100
+diff -uNr perl-5.9.3.orig/patchlevel.h perl-5.9.3/patchlevel.h
+--- perl-5.9.3.orig/patchlevel.h	2009-05-03 19:34:34.000000000 +0100
++++ perl-5.9.3/patchlevel.h	2009-05-03 19:34:34.000000000 +0100
 @@ -118,6 +118,7 @@
  #if !defined(PERL_PATCHLEVEL_H_IMPLICIT) && !defined(LOCAL_PATCH_COUNT)
  static const char * const local_patches[] = {
