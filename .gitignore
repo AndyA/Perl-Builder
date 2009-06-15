@@ -1,0 +1,15 @@
+*.bak
+*.tar.gz
+.lwpcookies
+.prove
+Build
+Makefile
+Makefile.old
+Session.vim
+TAP-Filter-*
+_build*
+blib*
+build
+cover_db
+inst
+pm_to_blib*
